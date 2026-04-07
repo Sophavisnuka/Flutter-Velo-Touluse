@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/ui/providers/bottom_nav_provider.dart';
 import 'package:velo_toulouse/ui/screens/history_screen.dart';
-import 'package:velo_toulouse/ui/screens/map_screen.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/map_screen.dart';
 import 'package:velo_toulouse/ui/screens/profile_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen.dart';
 import 'package:velo_toulouse/ui/widgets/bottom_nav_bar.dart';
