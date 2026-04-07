@@ -14,8 +14,6 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  static const _accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +25,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MapViewModel>();
-    final _mapAccessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    final mapAccessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
 
     return FlutterMap(
       options: const MapOptions(
@@ -39,7 +37,7 @@ class _MapScreenState extends State<MapScreen> {
           urlTemplate:
             'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
           additionalOptions: {
-            'accessToken': _mapAccessToken,
+            'accessToken': mapAccessToken,
           },
         ),
         MarkerLayer(
