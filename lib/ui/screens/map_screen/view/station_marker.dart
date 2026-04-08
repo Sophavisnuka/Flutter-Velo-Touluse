@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class StationMarker extends StatelessWidget {
   final String name;
-  final int totalSlots;
-  final String status;
+  final int availableSlots;
+  final int availableBike;
 
   const StationMarker({
     super.key,
     required this.name,
-    required this.totalSlots,
-    required this.status,
+    required this.availableSlots,
+    required this.availableBike,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isActive = status == 'active';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -39,9 +39,9 @@ class StationMarker extends StatelessWidget {
               Text(
                 name,
                 style: const TextStyle(
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.black,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -49,12 +49,9 @@ class StationMarker extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Total slots
-                  const Icon(Icons.local_parking, size: 12, color: Colors.deepOrange),
-                  const SizedBox(width: 2),
                   Text(
-                    '$totalSlots slots',
-                    style: const TextStyle(fontSize: 10, color: Colors.deepOrange),
+                    '$availableSlots slots',
+                    style: const TextStyle(fontSize: 13, color: AppTheme.primary),
                   ),
                   const SizedBox(width: 6),
                   // Status dot
@@ -63,16 +60,12 @@ class StationMarker extends StatelessWidget {
                     height: 7,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isActive ? Colors.green : Colors.red,
                     ),
                   ),
                   const SizedBox(width: 2),
                   Text(
-                    status,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: isActive ? Colors.green : Colors.red,
-                    ),
+                    '$availableBike bikes',
+                    style: TextStyle(fontSize: 13,),
                   ),
                 ],
               ),

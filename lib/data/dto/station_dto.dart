@@ -6,6 +6,8 @@ class StationDto {
   static const locationKey = 'location';
   static const statusKey = 'status';
   static const totalSlotsKey = 'totalSlots';
+  static const bikeCountKey = 'bikeCount';
+  static const availableSlotsKey = 'availableSlots';
 
   static Station fromFireStore(String id, Map<String, dynamic>json,) {
     final geoPoint = json[locationKey] as GeoPoint;
@@ -13,8 +15,9 @@ class StationDto {
       stationId: id,
       name: json[nameKey],
       location: geoPoint,
-      status: json[statusKey],
-      totalSlots: json[totalSlotsKey]
+      totalSlots: json[totalSlotsKey],
+      bikeCount: json[bikeCountKey],
+      availableSlots: json[availableSlotsKey],
     );
   }
   static Map<String, dynamic> toFirestore(Station station) {
@@ -22,7 +25,8 @@ class StationDto {
       nameKey: station.name,
       locationKey: station.location,
       totalSlotsKey: station.totalSlots,
-      statusKey: station.status,
+      bikeCountKey: station.bikeCount,
+      availableSlotsKey: station.availableSlots
     };
   }
 }

@@ -3,8 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:velo_toulouse/model/station.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
-import 'package:velo_toulouse/ui/widgets/station_marker.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/station_marker.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/station_popup.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -21,6 +23,26 @@ class _MapScreenState extends State<MapScreen> {
       context.read<MapViewModel>().loadStation();
     });
   }
+
+  void _showStationPopup(BuildContext context, Station station) {
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StationDetailPopup(
+        stations: station, // you can calculate real distance if you want
+        onViewDetails: () {
+          Navigator.pop(context);
+          // TODO: navigate to detailed station page
+        },
+        onGetDirections: () {
+          Navigator.pop(context);
+          // TODO: open navigation map / Google Maps
+        },
+      ),
+    );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +64,8 @@ class _MapScreenState extends State<MapScreen> {
         ),
         MarkerLayer(
           markers: viewModel.stations.map((station) {
+            final availableSlot = station.totalSlots - station.bikeCount;
+
             return Marker(
               point: LatLng(
                 station.location.latitude,
@@ -50,10 +74,15 @@ class _MapScreenState extends State<MapScreen> {
               width: 130,
               height: 70,
               alignment: Alignment.bottomCenter,
-              child: StationMarker(
-                name: station.name,
-                totalSlots: station.totalSlots,
-                status: station.status,
+              child: GestureDetector(
+                onTap: () {
+                  _showStationPopup(context, station);
+                },
+                child: StationMarker(
+                  name: station.name,
+                  availableSlots: availableSlot,
+                  availableBike: station.bikeCount,
+                ),
               ),
             );
           }).toList(),
