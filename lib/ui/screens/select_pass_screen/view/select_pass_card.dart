@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 
 enum PassType {
   day,
@@ -129,34 +130,34 @@ class SelectPassCard extends StatelessWidget {
             title: Text('Expires'),
             subtitle: Text(expireDate),
             trailing: isCurrent
-                ? Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.15),
+              ? Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppTheme.secondary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    'Current Pass',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                )
+              : TextButton(
+                  onPressed: onSwitch ?? () {},
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppTheme.primary.withOpacity(0.15),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Text(
-                      'Current Pass',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  )
-                : TextButton(
-                    onPressed: onSwitch ?? () {},
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.orange.withOpacity(0.15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    ),
-                    child: Text(
-                      'Switch Plan',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange[800],
-                      ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  ),
+                  child: Text(
+                    'Switch Plan',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primary,
                     ),
                   ),
+                ),
           ),
         ],
       ),

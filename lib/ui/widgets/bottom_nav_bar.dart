@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -48,7 +49,7 @@ class BottomNavBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? Colors.deepOrange.withOpacity(0.15)
+                        ? AppTheme.primary.withOpacity(0.15)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -60,7 +61,7 @@ class BottomNavBar extends StatelessWidget {
                         duration: const Duration(milliseconds: 250),
                         child: Icon(
                           item['icon'],
-                          color: isSelected ? Colors.deepOrange : Colors.grey,
+                          color: isSelected ? AppTheme.primary : Colors.grey,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -71,7 +72,7 @@ class BottomNavBar extends StatelessWidget {
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.normal,
-                          color: isSelected ? Colors.deepOrange : Colors.grey,
+                          color: isSelected ? AppTheme.primary : Colors.grey,
                         ),
                         child: Text(item['label']),
                       ),
