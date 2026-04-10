@@ -49,45 +49,114 @@ class _MapScreenState extends State<MapScreen> {
     final viewModel = context.watch<MapViewModel>();
     final mapAccessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
 
-    return FlutterMap(
-      options: const MapOptions(
-        initialCenter: LatLng(13.3615, 103.8590),
-        initialZoom: 14,
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate:
-            'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
-          additionalOptions: {
-            'accessToken': mapAccessToken,
-          },
-        ),
-        MarkerLayer(
-          markers: viewModel.stations.map((station) {
-            final availableSlot = station.totalSlots - station.bikeCount;
+        FlutterMap(
+          mapController: viewModel.mapController,
+          options: const MapOptions(
+            initialCenter: LatLng(13.3615, 103.8590),
+            initialZoom: 14,
+          ),
+          children: [
+            TileLayer(
+              urlTemplate:
+                  'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
+              additionalOptions: {
+                'accessToken': mapAccessToken,
+              },
+            ),
+            MarkerLayer(
+              markers: viewModel.stations.map((station) {
+                final availableSlot = station.totalSlots - station.bikeCount;
 
-            return Marker(
-              point: LatLng(
-                station.location.latitude,
-                station.location.longitude,
-              ),
-              width: 130,
-              height: 70,
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                onTap: () {
-                  _showStationPopup(context, station);
-                },
-                child: StationMarker(
-                  name: station.name,
-                  availableSlots: availableSlot,
-                  availableBike: station.bikeCount,
+                return Marker(
+                  point: LatLng(
+                    station.location.latitude,
+                    station.location.longitude,
+                  ),
+                  width: 130,
+                  height: 70,
+                  alignment: Alignment.bottomCenter,
+                  child: GestureDetector(
+                    onTap: () {
+                      _showStationPopup(context, station);
+                    },
+                    child: StationMarker(
+                      name: station.name,
+                      availableSlots: availableSlot,
+                      availableBike: station.bikeCount,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+
+        // SEARCH UI
+        _buildSearchUI(viewModel),
+      ],
+    );
+  }
+
+  Widget _buildSearchUI(MapViewModel viewModel) {
+    return Positioned(
+      top: 70,
+      left: 16,
+      right: 16,
+      child: Column(
+        children: [
+          // Search Bar
+          Material(
+            elevation: 1,
+            borderRadius: BorderRadius.circular(30),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Search station or location",
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
                 ),
               ),
-            );
-          }).toList(),
-        ),
-      ],
+              onChanged: (value) {
+                viewModel.searchStation(value);
+              },
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Search Result List
+          if (viewModel.filteredStations.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                primary: false,
+                shrinkWrap: true,
+                itemCount: viewModel.filteredStations.length,
+                itemBuilder: (context, index) {
+                  final station = viewModel.filteredStations[index];
+                  return ListTile(
+                    leading: const Icon(Icons.directions_bike),
+                    title: Text(station.name),
+                    onTap: () {
+                      viewModel.moveToStation(station);
+                      // viewModel.searchStation('');
+                    },
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

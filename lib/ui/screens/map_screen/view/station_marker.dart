@@ -41,33 +41,9 @@ class StationMarker extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: AppTheme.primary,
                 ),
                 overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$availableSlots slots',
-                    style: const TextStyle(fontSize: 13, color: AppTheme.primary),
-                  ),
-                  const SizedBox(width: 6),
-                  // Status dot
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '$availableBike bikes',
-                    style: TextStyle(fontSize: 13,),
-                  ),
-                ],
               ),
             ],
           ),

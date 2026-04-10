@@ -17,8 +17,8 @@ class StationDetailPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: MediaQuery.of(context).size.height * 0.3,
       padding: const EdgeInsets.all(16),
-      
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -86,14 +86,19 @@ class StationDetailPopup extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
           // Action buttons
-          Column(
+          Row(
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onViewDetails,
+              // Get Directions (Primary Button)
+              Expanded(
+                flex: 1,
+                child: ElevatedButton.icon(
+                  onPressed: onGetDirections,
+                  icon: const Icon(Icons.navigation, color: Colors.white),
+                  label: const Text(
+                    'Get Directions',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primary,
                     shape: RoundedRectangleBorder(
@@ -101,12 +106,33 @@ class StationDetailPopup extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 18),
                   ),
-                  child: const Text('View more details', style: TextStyle(color: AppTheme.surface),),
                 ),
               ),
-              const SizedBox(height: 12),
+
+              const SizedBox(width: 10),
+
+              // View Details (Secondary Button)
+              Expanded(
+                flex: 1,
+                child: OutlinedButton.icon(
+                  onPressed: onViewDetails,
+                  icon: const Icon(Icons.info_outline),
+                  label: const Text(
+                    'View Details',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primary,
+                    side: const BorderSide(color: AppTheme.primary, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                  ),
+                ),
+              ),
             ],
-          ),
+          )
         ],
       ),
     );
