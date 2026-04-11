@@ -4,9 +4,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/station.dart';
+import 'package:velo_toulouse/ui/screens/bike_screen/bike_screen.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/map_legend.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
-import 'package:velo_toulouse/ui/screens/map_screen/view/station_marker.dart';
-import 'package:velo_toulouse/ui/screens/map_screen/view/station_popup.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
+import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
+import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,8 +36,9 @@ class _MapScreenState extends State<MapScreen> {
       builder: (_) => StationDetailPopup(
         stations: station, // you can calculate real distance if you want
         onViewDetails: () {
-          Navigator.pop(context);
-          // TODO: navigate to detailed station page
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (builder) => BikeScreen())
+          );
         },
         onGetDirections: () {
           Navigator.pop(context);
@@ -59,16 +63,13 @@ class _MapScreenState extends State<MapScreen> {
           ),
           children: [
             TileLayer(
-              urlTemplate:
-                  'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
+              urlTemplate:'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
               additionalOptions: {
                 'accessToken': mapAccessToken,
               },
             ),
             MarkerLayer(
               markers: viewModel.stations.map((station) {
-                final availableSlot = station.totalSlots - station.bikeCount;
-
                 return Marker(
                   point: LatLng(
                     station.location.latitude,
@@ -82,9 +83,7 @@ class _MapScreenState extends State<MapScreen> {
                       _showStationPopup(context, station);
                     },
                     child: StationMarker(
-                      name: station.name,
-                      availableSlots: availableSlot,
-                      availableBike: station.bikeCount,
+                      availableBike: station.bikeCount
                     ),
                   ),
                 );
@@ -92,8 +91,13 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
         ),
-
-        // SEARCH UI
+        // Map Legend
+        Positioned(
+          bottom: 95,
+          left: 16,
+          child: MapLegend(),
+        ),
+        // search UI
         _buildSearchUI(viewModel),
       ],
     );
@@ -105,8 +109,9 @@ class _MapScreenState extends State<MapScreen> {
       left: 16,
       right: 16,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end, // align right
         children: [
-          // Search Bar
+          // Search Bar (full width)
           Material(
             elevation: 1,
             borderRadius: BorderRadius.circular(30),
@@ -130,6 +135,11 @@ class _MapScreenState extends State<MapScreen> {
 
           const SizedBox(height: 10),
 
+          //Current Plan (right aligned under search)
+          CurrentPlanCard(),
+
+          const SizedBox(height: 10),
+
           // Search Result List
           if (viewModel.filteredStations.isNotEmpty)
             Container(
@@ -149,7 +159,6 @@ class _MapScreenState extends State<MapScreen> {
                     title: Text(station.name),
                     onTap: () {
                       viewModel.moveToStation(station);
-                      // viewModel.searchStation('');
                     },
                   );
                 },

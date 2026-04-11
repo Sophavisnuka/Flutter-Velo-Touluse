@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassScreen extends StatelessWidget {
   const SelectPassScreen({super.key});
@@ -18,23 +19,7 @@ class SelectPassScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16),
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min, // important
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('Current Plan', style: TextStyle(fontSize: 12, color: AppTheme.primary)),
-                    Text('Day Pass', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primary)),
-                  ],
-                ),
-              ),
-            ),
+            child: CurrentPlanCard(),
           ),
         ],
       ),
