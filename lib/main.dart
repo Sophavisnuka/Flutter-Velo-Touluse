@@ -32,19 +32,17 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => BottomNavProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => BottomNavProvider()),
         ChangeNotifierProvider(
           create: (_) => MapViewModel(
-            repo:  StationRepository(firestore: firestore)
+            repo: StationRepository(firestore: firestore),
           ),
-        )
+        ),
       ],
       child: DevicePreview(
         enabled: true,
         builder: (context) => MyApp(),
       ),
-    )
+    ),
   );
 }

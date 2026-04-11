@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/model/station.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
-import 'package:velo_toulouse/ui/widgets/icon_text_tile.dart';
+import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 import 'package:velo_toulouse/ui/widgets/primary_button.dart';
 import 'package:velo_toulouse/ui/widgets/secondary_button.dart';
 
@@ -48,20 +48,16 @@ class StationDetailPopup extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           // Available bikes info
-          IconTextTile(
-            bgColor: AppTheme.primary.withOpacity(0.15),
-            icons: Icons.ev_station,
-            iconColor: AppTheme.primary,
-            text: 'Available bikes: ${stations.bikeCount.toString()}',
-            textColor: AppTheme.primary,
+          ListTileCard(
+            icon: Icons.ev_station,
+            color: AppTheme.primary,
+            title: 'Available bikes: ${stations.availableBike.toString()}',
           ),
           const SizedBox(height: 16),
-          IconTextTile(
-            bgColor: AppTheme.secondary.withOpacity(0.15),
-            icons: Icons.directions_bike,
-            iconColor: AppTheme.secondary,
-            text: 'Available slots: ${stations.availableSlots.toString()}',
-            textColor: AppTheme.secondary,
+          ListTileCard(
+            icon: Icons.directions_bike,
+            color: AppTheme.secondary,
+            title: 'Available slots: ${stations.availableSlots.toString()}',
           ),
           const SizedBox(height: 16),
           // Action buttons
