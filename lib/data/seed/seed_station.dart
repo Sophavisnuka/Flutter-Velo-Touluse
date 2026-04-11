@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
@@ -16,60 +17,80 @@ Future<void> main() async {
     {
       'name': 'Old Market Station',
       'location': GeoPoint(13.3615, 103.8590),
-      'totalSlots': 10,
-      'bikeCount': 6,
+      'availableBike': 6,
+      'availableSlots': 4,
     },
     {
       'name': 'Pub Street Station',
       'location': GeoPoint(13.3610, 103.8610),
-      'totalSlots': 10,
-      'bikeCount': 5,
+      'availableBike': 5,
+      'availableSlots': 5,
     },
     {
       'name': 'Angkor Night Market',
       'location': GeoPoint(13.3600, 103.8600),
-      'totalSlots': 10,
-      'bikeCount': 4,
+      'availableBike': 4,
+      'availableSlots': 6,
     },
     {
       'name': 'Wat Bo Station',
       'location': GeoPoint(13.3590, 103.8580),
-      'totalSlots': 10,
-      'bikeCount': 7,
+      'availableBike': 7,
+      'availableSlots': 3,
     },
     {
       'name': 'Royal Residence Station',
       'location': GeoPoint(13.3620, 103.8570),
-      'totalSlots': 10,
-      'bikeCount': 3,
+      'availableBike': 3,
+      'availableSlots': 7,
     },
   ];
 
-  for (var stationData in stations) {
-    final int totalSlots = stationData['totalSlots'] as int;
-    final int bikeCount = stationData['bikeCount'] as int;
+  for (int i = 0; i < stations.length; i++) {
+    final stationData = stations[i];
+    final stationId = 'station_${i + 1}';
+    final int availableBike = stationData['availableBike'] as int;
+    final int availableSlots = stationData['availableSlots'] as int;
+    final int totalSlots = availableBike + availableSlots;
 
-    // Create station
-    final stationRef = await firestore.collection('stations').add({
+    // Overwrite station document
+    await firestore.collection('stations').doc(stationId).set({
       'name': stationData['name'],
       'location': stationData['location'],
-      'totalSlots': totalSlots,
-      'bikeCount': bikeCount,
-      'availableSlots': totalSlots - bikeCount,
+      'availableBike': availableBike,
+      'availableSlots': availableSlots,
     });
 
-    print("Added station ${stationData['name']}");
+    print("Added station $stationId: ${stationData['name']}");
 
-    // Create bikes for the station
-    for (int i = 0; i < bikeCount; i++) {
-      final bikeRef = await firestore.collection('bikes').add({
-        'status': 'available',
-        'currentStationId': stationRef.id,
+    // Delete old slots first
+    final existingSlots = await firestore
+        .collection('stations')
+        .doc(stationId)
+        .collection('slots')
+        .get();
+
+    for (final doc in existingSlots.docs) {
+      await doc.reference.delete();
+    }
+
+    print("Cleared old slots for $stationId");
+
+    // Create new slots
+    for (int j = 1; j <= totalSlots; j++) {
+      await firestore
+          .collection('stations')
+          .doc(stationId)
+          .collection('slots')
+          .doc('slot_$j')
+          .set({
+        'slotNumber': j,
+        'hasBike': j <= availableBike,
       });
-
-      print("Added bike ${bikeRef.id} to ${stationData['name']}");
+      print("Added slot_$j to $stationId");
     }
   }
 
   print("Seeding completed 🚲");
+  exit(0);
 }

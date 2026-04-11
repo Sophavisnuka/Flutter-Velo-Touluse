@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 
 enum PassType {
   day,
@@ -98,17 +99,11 @@ class SelectPassCard extends StatelessWidget {
       child: Column(
         children: [
           // Top tile with icon, name and price
-          ListTile(
-            leading: Container(
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: EdgeInsets.all(10),
-              child: Icon(icon, color: iconColor),
-            ),
-            title: Text(passName),
-            subtitle: Text(price),
+          ListTileCard(
+            color: iconColor, 
+            icon: icon, 
+            title: passName,
+            subtitle: price
           ),
 
           SizedBox(height: 10),

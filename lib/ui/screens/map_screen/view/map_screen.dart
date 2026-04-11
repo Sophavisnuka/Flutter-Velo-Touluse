@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/station.dart';
-import 'package:velo_toulouse/ui/screens/bike_screen/bike_screen.dart';
+import 'package:velo_toulouse/ui/screens/bike_screen/view/bike_screen.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/map_legend.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
@@ -19,39 +19,44 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  bool _initialized = false;
+  
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
       context.read<MapViewModel>().loadStation();
-    });
+    }
   }
-
-  void _showStationPopup(BuildContext context, Station station) {
-    showModalBottomSheet(
-      showDragHandle: true,
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => StationDetailPopup(
-        stations: station, // you can calculate real distance if you want
-        onViewDetails: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (builder) => BikeScreen())
-          );
-        },
-        onGetDirections: () {
-          Navigator.pop(context);
-          // TODO: open navigation map / Google Maps
-        },
-      ),
-    );
-}
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MapViewModel>();
     final mapAccessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+
+    void showStationPopup(BuildContext context, Station station) {
+      showModalBottomSheet(
+        showDragHandle: true,
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => StationDetailPopup(
+          stations: station,
+          onViewDetails: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BikeScreen(station: station),
+              ),
+            );
+          },
+          onGetDirections: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+    }
 
     return Stack(
       children: [
@@ -80,10 +85,10 @@ class _MapScreenState extends State<MapScreen> {
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
-                      _showStationPopup(context, station);
+                      showStationPopup(context, station);
                     },
                     child: StationMarker(
-                      availableBike: station.bikeCount
+                      availableBike: station.availableBike
                     ),
                   ),
                 );
@@ -128,7 +133,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
               onChanged: (value) {
-                viewModel.searchStation(value);
+                viewModel.filterStations(value);
               },
             ),
           ),
