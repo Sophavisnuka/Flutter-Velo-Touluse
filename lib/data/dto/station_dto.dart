@@ -6,7 +6,7 @@ class StationDto {
   static const nameKey = 'name';
   static const locationKey = 'location';
   static const totalSlotsKey = 'totalSlots';
-  static const bikeCountKey = 'bikeCount';
+  static const availableBikeKey = 'availableBike';
   static const availableSlotsKey = 'availableSlots';
 
   static Station fromFireStore(String id, List<Slot> slots, Map<String, dynamic> json,) {
