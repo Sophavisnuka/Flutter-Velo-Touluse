@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
-import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassScreen extends StatelessWidget {
