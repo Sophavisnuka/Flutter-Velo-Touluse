@@ -4,7 +4,6 @@ import 'package:velo_toulouse/model/station.dart';
 class StationDto {
   static const nameKey = 'name';
   static const locationKey = 'location';
-  static const statusKey = 'status';
   static const totalSlotsKey = 'totalSlots';
   static const bikeCountKey = 'bikeCount';
   static const availableSlotsKey = 'availableSlots';
