@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:velo_toulouse/config/map_box_config.dart';
 import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
-import 'package:velo_toulouse/ui/providers/bottom_nav_provider.dart';
+import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'firebase_options.dart';
 
@@ -28,16 +28,13 @@ Future<void> main() async {
   );
 
   final firestore = FirebaseFirestore.instance;
+  final StationRepository stationRepo = StationRepository(firestore: firestore);
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => BottomNavProvider()),
-        ChangeNotifierProvider(
-          create: (_) => MapViewModel(
-            repo: StationRepository(firestore: firestore),
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => MapViewModel(repo: stationRepo)),
+        ChangeNotifierProvider(create: (_) => BikeViewModel(repo: stationRepo)),
       ],
       child: DevicePreview(
         enabled: true,

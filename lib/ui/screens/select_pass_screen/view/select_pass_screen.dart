@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassScreen extends StatelessWidget {
@@ -18,7 +19,10 @@ class SelectPassScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16),
-            child: CurrentPlanCard(),
+            child: CurrentPlanCard(
+              bgColor: AppTheme.primary.withOpacity(0.15),
+              color: AppTheme.primary
+            ),
           ),
         ],
       ),

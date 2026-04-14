@@ -4,21 +4,22 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/station.dart';
-import 'package:velo_toulouse/ui/screens/bike_screen/view/bike_screen.dart';
+import 'package:velo_toulouse/ui/screens/bike_screen/bike_screen.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/map_legend.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+class MapContent extends StatefulWidget {
+  const MapContent({super.key});
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  State<MapContent> createState() => _MapContentState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapContentState extends State<MapContent> {
   bool _initialized = false;
   
   @override
@@ -141,7 +142,10 @@ class _MapScreenState extends State<MapScreen> {
           const SizedBox(height: 10),
 
           //Current Plan (right aligned under search)
-          CurrentPlanCard(),
+          CurrentPlanCard(
+            bgColor: AppTheme.primary,
+            color: AppTheme.surface,
+          ),
 
           const SizedBox(height: 10),
 

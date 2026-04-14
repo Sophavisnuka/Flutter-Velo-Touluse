@@ -103,7 +103,8 @@ class SelectPassCard extends StatelessWidget {
             color: iconColor, 
             icon: icon, 
             title: passName,
-            subtitle: price
+            subtitle: price,
+            bgColor: Colors.white,
           ),
 
           SizedBox(height: 10),

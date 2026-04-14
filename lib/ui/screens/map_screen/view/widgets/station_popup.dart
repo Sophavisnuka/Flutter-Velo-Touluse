@@ -51,12 +51,14 @@ class StationDetailPopup extends StatelessWidget {
           ListTileCard(
             icon: Icons.ev_station,
             color: AppTheme.primary,
+            bgColor: AppTheme.primary.withOpacity(0.15),
             title: 'Available bikes: ${stations.availableBike.toString()}',
           ),
           const SizedBox(height: 16),
           ListTileCard(
             icon: Icons.directions_bike,
             color: AppTheme.secondary,
+            bgColor: AppTheme.secondary.withOpacity(0.15),
             title: 'Available slots: ${stations.availableSlots.toString()}',
           ),
           const SizedBox(height: 16),
