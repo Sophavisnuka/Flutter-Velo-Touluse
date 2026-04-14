@@ -7,18 +7,20 @@ class ListTileCard extends StatelessWidget {
     required this.icon,
     required this.title,
     this.subtitle,
+    this.bgColor,
   });
 
   final Color color;
   final IconData icon;
   final String title;
+  final Color? bgColor;
   final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: bgColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
