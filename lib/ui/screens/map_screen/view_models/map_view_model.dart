@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/model/station.dart';
@@ -13,6 +13,7 @@ class MapViewModel extends ChangeNotifier {
   List<Station> filteredStations = [];
   bool isMapLoading = false;
   MapController mapController = MapController();
+  Station? selectedStation;
 
   Future<void> loadStation() async {
     isMapLoading = true;
@@ -42,5 +43,46 @@ class MapViewModel extends ChangeNotifier {
     mapController.move(
       LatLng(station.location.latitude, station.location.longitude), 16,
     );
+  }
+
+  /// Selects a station and moves the map so the station is centered
+  /// in the visible area between the search bar and the popup.
+  /// [cameraShiftDown] is how many screen pixels to shift the camera
+  /// center southward (positive y in world coords), which moves the
+  /// station upward on screen.
+  void selectStation(Station station, {double cameraShiftDown = 0}) {
+    selectedStation = station;
+    filteredStations = [];
+    notifyListeners();
+
+    final stationLatLng = LatLng(
+      station.location.latitude,
+      station.location.longitude,
+    );
+
+    if (cameraShiftDown > 0) {
+      try {
+        final camera = mapController.camera;
+        // Project the station to world pixel space at zoom 16.
+        // y increases southward, so adding to y moves the camera center south,
+        // which makes the station appear north of (above) screen center.
+        final stationOffset = camera.projectAtZoom(stationLatLng, 16.0);
+        final shiftedOffset = Offset(
+          stationOffset.dx,
+          stationOffset.dy + cameraShiftDown,
+        );
+        final newCenter = camera.unprojectAtZoom(shiftedOffset, 16.0);
+        mapController.move(newCenter, 16.0);
+      } catch (_) {
+        mapController.move(stationLatLng, 16.0);
+      }
+    } else {
+      mapController.move(stationLatLng, 16.0);
+    }
+  }
+
+  void clearSelectedStation() {
+    selectedStation = null;
+    notifyListeners();
   }
 }
