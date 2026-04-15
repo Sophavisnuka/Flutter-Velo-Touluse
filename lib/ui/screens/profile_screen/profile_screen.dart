@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:velo_toulouse/ui/states/pass_provider.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
+import 'package:velo_toulouse/ui/widgets/primary_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -17,11 +22,16 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPlanCard(),
+                  _buildPlanCard(context),
                   const SizedBox(height: 20),
                   _buildSettingsSection(),
                   const SizedBox(height: 20),
-                  _buildSignOutButton(),
+                  // _buildSignOutButton(),
+                  PrimaryButton(
+                    onViewDetails: () {}, 
+                    text: "Sign out", 
+                    icon: Icons.logout
+                  )
                 ],
               ),
             ),
@@ -67,7 +77,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPlanCard() {
+  Widget _buildPlanCard(BuildContext context) {
+
+    final provider = context.watch<PassProvider>();
+    final pass = provider.currentPass;
+    final expiry = provider.expiresAt;
+    final expiryText = expiry != null ? DateFormat('MMM d, yyyy').format(expiry) : null;
+    
     return Transform.translate(
       offset: const Offset(0, -20),
       child: Container(
@@ -83,30 +99,37 @@ class ProfileScreen extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.15),
+                color: pass.color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.calendar_month, size: 18, color: AppTheme.primary),
+              child: Icon(pass.icon, size: 18, color: pass.color),
             ),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Current plan', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                  Text('Monthly Pass', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text(pass.label, style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text('Expire date: $expiryText', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
+            // Badge: Active or No Plan
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppTheme.secondary.withOpacity(0.15),
+                color: pass.isActive
+                    ? AppTheme.secondary.withOpacity(0.15)
+                    : Colors.grey.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'Active',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.secondary),
+              child: Text(
+                pass.isActive ? 'Active' : 'No Plan',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: pass.isActive ? AppTheme.secondary : Colors.grey,
+                ),
               ),
             ),
           ],
@@ -132,55 +155,43 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildSettingsRow(icon: Icons.person_outline, label: 'Edit profile'),
-              const Divider(height: 0.5, thickness: 0.5),
-              _buildSettingsRow(icon: Icons.notifications_outlined, label: 'Notifications'),
-              const Divider(height: 0.5, thickness: 0.5),
-              _buildSettingsRow(icon: Icons.language, label: 'Language', trailing: 'English'),
+              ListTileCard(
+                color: Colors.grey, 
+                bgColor: Colors.white, 
+                icon: Icons.person_outline, 
+                title: 'Edit Profile',
+                trailing: Icon(
+                  Icons.arrow_forward_ios_sharp,
+                  color: Colors.grey,
+                  size: 15,
+                ),
+              ),
+              ListTileCard(
+                color: Colors.grey, 
+                bgColor: Colors.white, 
+                icon: Icons.notifications_outlined, 
+                title: 'Notifications',
+                trailing: Icon(
+                  Icons.arrow_forward_ios_sharp,
+                  color: Colors.grey,
+                  size: 15,
+                ),
+              ),
+              ListTileCard(
+                color: Colors.grey, 
+                bgColor: Colors.white, 
+                icon: Icons.language, 
+                title: 'Language',
+                trailing: Icon(
+                  Icons.arrow_forward_ios_sharp,
+                  color: Colors.grey,
+                  size: 15,
+                ),
+              ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSettingsRow({
-    required IconData icon,
-    required String label,
-    String? trailing,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: Colors.grey),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14)),
-          ),
-          if (trailing != null)
-            Text(trailing, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-          const SizedBox(width: 6),
-          const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSignOutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton(
-        onPressed: () {},
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppTheme.primary,
-          side: BorderSide(color: AppTheme.primary.withOpacity(0.15), width: 0.5),
-          backgroundColor: const Color(0xFFFCEBEB),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: const Text('Sign out', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-      ),
     );
   }
 }

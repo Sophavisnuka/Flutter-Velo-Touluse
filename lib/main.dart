@@ -9,6 +9,7 @@ import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
+import 'package:velo_toulouse/ui/states/pass_provider.dart';
 import 'firebase_options.dart';
 
 const bool enableDevicePreview = true;
@@ -35,6 +36,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => MapViewModel(repo: stationRepo)),
         ChangeNotifierProvider(create: (_) => BikeViewModel(repo: stationRepo)),
+        ChangeNotifierProvider(create: (_) => PassProvider()),
       ],
       child: DevicePreview(
         enabled: true,
