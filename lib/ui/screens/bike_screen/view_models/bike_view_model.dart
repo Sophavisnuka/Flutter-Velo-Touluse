@@ -9,6 +9,7 @@ class BikeViewModel extends ChangeNotifier {
 
   Station? selectedStation;
   bool isStationLoading = false;
+  bool isReleasing = false;
 
   Future<void> selectStation(Station station) async {
     isStationLoading = true;
@@ -18,6 +19,30 @@ class BikeViewModel extends ChangeNotifier {
     selectedStation = await repo.fetchStationWithSlots(station.stationId);
 
     isStationLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> releaseBike(String slotId) async {
+    if (selectedStation == null) return;
+    isReleasing = true;
+    notifyListeners();
+
+    await repo.releaseBike(selectedStation!.stationId, slotId);
+    selectedStation = await repo.fetchStationWithSlots(selectedStation!.stationId);
+
+    isReleasing = false;
+    notifyListeners();
+  }
+
+  Future<void> returnBike(String slotId) async {
+    if (selectedStation == null) return;
+    isReleasing = true;
+    notifyListeners();
+
+    await repo.returnBike(selectedStation!.stationId, slotId);
+    selectedStation = await repo.fetchStationWithSlots(selectedStation!.stationId);
+
+    isReleasing = false;
     notifyListeners();
   }
 }
