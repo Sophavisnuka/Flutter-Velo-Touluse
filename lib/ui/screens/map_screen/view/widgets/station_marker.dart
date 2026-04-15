@@ -3,77 +3,90 @@ import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class StationMarker extends StatelessWidget {
   final int availableBike;
+  final bool isDimmed;
+  final bool isSelected;
 
   const StationMarker({
     super.key,
     required this.availableBike,
+    this.isDimmed = false,
+    this.isSelected = false,
   });
 
   Color get _markerColor {
-    if (availableBike == 0) return Color(0xFF9E9E9E);
+    if (availableBike == 0) return const Color(0xFF9E9E9E);
     if (availableBike <= 5) return AppTheme.secondary;
-    if (availableBike > 5) return AppTheme.primary; 
     return AppTheme.primary;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: _markerColor,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: _markerColor.withOpacity(0.4),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const Icon(
-                Icons.directions_bike,
-                color: Colors.white,
-                size: 26,
-              ),
-              // Bike count badge — top right
-              Positioned(
-                top: -25,
-                right: -10,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: _markerColor, width: 1.5),
+    return Opacity(
+      opacity: isDimmed ? 0.3 : 1.0,
+      child: Transform.scale(
+        scale: isSelected ? 1.25 : 1.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _markerColor,
+                borderRadius: BorderRadius.circular(12),
+                border: isSelected
+                    ? Border.all(color: Colors.white, width: 2.5)
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: _markerColor.withOpacity(isSelected ? 0.7 : 0.4),
+                    blurRadius: isSelected ? 14 : 6,
+                    spreadRadius: isSelected ? 2 : 0,
+                    offset: const Offset(0, 2),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$availableBike',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: _markerColor,
+                ],
+              ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Icon(
+                    Icons.directions_bike,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                  // Bike count badge — top right
+                  Positioned(
+                    top: -25,
+                    right: -10,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: _markerColor, width: 1.5),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$availableBike',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: _markerColor,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+            // Pin triangle
+            CustomPaint(
+              size: const Size(12, 6),
+              painter: _TrianglePainter(color: _markerColor),
+            ),
+          ],
         ),
-        // Pin triangle
-        CustomPaint(
-          size: const Size(12, 6),
-          painter: _TrianglePainter(color: _markerColor),
-        ),
-      ],
+      ),
     );
   }
 }
