@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
-import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/select_pass_card.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
-class SelectPassScreen extends StatelessWidget {
-  const SelectPassScreen({super.key});
+class SelectPassContent extends StatelessWidget {
+  const SelectPassContent({super.key});
 
   @override
   Widget build(BuildContext context) {

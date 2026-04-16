@@ -9,7 +9,6 @@ import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.d
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
-import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 import 'package:velo_toulouse/ui/widgets/trip_progress_banner.dart';
 
