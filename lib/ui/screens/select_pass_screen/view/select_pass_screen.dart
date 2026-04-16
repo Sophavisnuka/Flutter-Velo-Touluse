@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
+import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
-import 'package:velo_toulouse/ui/states/pass_provider.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassScreen extends StatelessWidget {
@@ -10,7 +10,8 @@ class SelectPassScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final passProvider = context.watch<PassProvider>();
+    final userViewModel = context.watch<UserViewModel>();
+    final user = userViewModel.user;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 241, 241),
@@ -31,12 +32,15 @@ class SelectPassScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: ListView(
           children: PassType.values.where((type) => type != PassType.none).map((type) {
-            final isCurrent = passProvider.currentPass == type;
+            final isCurrent = user?.passType == type;
+            final expiresAt = isCurrent && user?.activatedAt != null
+              ? type.expiresAt(user!.activatedAt!)
+              : null;
             return SelectPassCard(
               type: type,
               isCurrent: isCurrent,
-              expiresAt: isCurrent ? passProvider.expiresAt : null,
-              onSwitch: () => passProvider.switchPass(type),
+              expiresAt: expiresAt,
+              onSwitch: () => userViewModel.switchPlan(type),
             );
           }).toList(),
         ),

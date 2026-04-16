@@ -23,6 +23,30 @@ class SelectPassCard extends StatelessWidget {
     return DateFormat('MMM d, yyyy').format(expiresAt!);
   }
 
+  Future<void> _confirmSwitch(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Switch to ${type.label}?'),
+        content: const Text(
+          'Your current pass will be replaced immediately.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) onSwitch?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,29 +123,5 @@ class SelectPassCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _confirmSwitch(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Switch to ${type.label}?'),
-        content: const Text(
-          'Your current pass will be replaced immediately.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) onSwitch?.call();
   }
 }
