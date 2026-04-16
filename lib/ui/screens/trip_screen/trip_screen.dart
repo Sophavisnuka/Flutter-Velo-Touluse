@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -27,14 +28,6 @@ class _TripScreenState extends State<TripScreen> {
   void dispose() {
     _tickTimer?.cancel();
     super.dispose();
-  }
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    if (h > 0) return '$h:$m:$s';
-    return '$m:$s';
   }
 
   @override
@@ -90,7 +83,7 @@ class _TripScreenState extends State<TripScreen> {
               // Big timer
               Center(
                 child: Text(
-                  _formatDuration(elapsed),
+                  Formatter.formatDuration(elapsed),
                   style: const TextStyle(
                     fontSize: 72,
                     fontWeight: FontWeight.bold,

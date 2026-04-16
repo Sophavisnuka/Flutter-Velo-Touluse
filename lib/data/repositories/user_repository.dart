@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:velo_toulouse/data/dto/user_dto.dart';
 import 'package:velo_toulouse/model/user.dart';
+import 'package:velo_toulouse/util/pass_type_convert.dart';
 
 class UserRepository {
 
@@ -32,7 +33,7 @@ class UserRepository {
       .collection('users')
       .doc(user.userId)
       .update({
-        'passType': UserDto.passTypeToString(user.passType),
+        'passType': PassTypeConvert.passTypeToString(user.passType),
         'activatedAt': user.activatedAt,
       });
   }

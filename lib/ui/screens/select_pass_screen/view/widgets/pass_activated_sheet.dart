@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class PassActivatedSheet extends StatelessWidget {
   final PassType newPass;
@@ -16,9 +16,7 @@ class PassActivatedSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final expiresAt = newPass.expiresAt(activatedAt);
-    final expiryText = expiresAt != null
-        ? DateFormat('MMM d, yyyy').format(expiresAt)
-        : '—';
+    final expiryText = expiresAt != null ? Formatter.expiry(expiresAt) : '—';
 
     return Container(
       padding: const EdgeInsets.all(24),

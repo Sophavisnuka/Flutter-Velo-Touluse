@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 import 'package:velo_toulouse/ui/widgets/primary_button.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -81,9 +81,7 @@ class ProfileScreen extends StatelessWidget {
     final user = provider.user;
     final pass = user?.passType ?? PassType.none;
     final expiry = provider.expiresAt;
-    final expiryText = expiry != null 
-        ? DateFormat('MMM d, yyyy').format(expiry) 
-        : '—';
+    final expiryText = expiry != null ? Formatter.expiry(expiry) : '—';
     
     return Transform.translate(
       offset: const Offset(0, -20),

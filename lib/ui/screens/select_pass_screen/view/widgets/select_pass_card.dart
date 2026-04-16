@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/pass_activated_sheet.dart';
@@ -9,6 +8,7 @@ import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class SelectPassCard extends StatelessWidget {
   final PassType type;
@@ -23,11 +23,6 @@ class SelectPassCard extends StatelessWidget {
     this.expiresAt,
     this.onSwitch,
   });
-
-  String get _formattedExpiry {
-    if (expiresAt == null) return '—';
-    return DateFormat('MMM d, yyyy').format(expiresAt!);
-  }
 
   Future<void> _confirmSwitch(BuildContext context, PassType currentPass) async {
     // Step 1: Warning sheet (only if user has an active pass)
@@ -126,7 +121,7 @@ class SelectPassCard extends StatelessWidget {
           ListTile(
             title: const Text('Expires'),
             subtitle: Text(
-              isCurrent ? _formattedExpiry : '—',
+              isCurrent ? Formatter.expiry(expiresAt) : '—',
             ),
             trailing: isCurrent
                 ? Container(
