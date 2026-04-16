@@ -85,4 +85,20 @@ class MapViewModel extends ChangeNotifier {
     selectedStation = null;
     notifyListeners();
   }
+
+  /// Re-fetches a single station's counts from Firestore and updates the
+  /// in-memory list so markers and the popup show fresh data.
+  Future<void> refreshStation(String stationId) async {
+    final updated = await repo.fetchStation(stationId);
+
+    stations = stations.map((s) {
+      return s.stationId == stationId ? updated : s;
+    }).toList();
+
+    if (selectedStation?.stationId == stationId) {
+      selectedStation = updated;
+    }
+
+    notifyListeners();
+  }
 }

@@ -5,11 +5,13 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/station.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/bike_screen.dart';
-import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/map_legend.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
+import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
+import 'package:velo_toulouse/ui/widgets/trip_progress_banner.dart';
 
 class MapContent extends StatefulWidget {
   const MapContent({super.key});
@@ -60,8 +62,13 @@ class _MapContentState extends State<MapContent> {
               ))
               .then((_) {
             _navigatingToDetails = false;
-            if (mounted && viewModel.selectedStation != null) {
+            final tripVm = context.read<TripViewModel>();
+            if (mounted &&
+                viewModel.selectedStation != null &&
+                !tripVm.isTripActive) {
               _showStationPopup(viewModel.selectedStation!);
+            } else if (tripVm.isTripActive) {
+              viewModel.clearSelectedStation();
             }
           });
         },
@@ -167,11 +174,12 @@ class _MapContentState extends State<MapContent> {
         // Selected marker rendered above the dark overlay so it stays fully colored.
         ..._buildSelectedMarkerOverlay(viewModel),
 
-        // Map Legend
+        // Trip progress banner — shown at bottom when a trip is active
         Positioned(
-          bottom: 95,
-          left: 16,
-          child: MapLegend(),
+          bottom: 100,
+          left: 0,
+          right: 0,
+          child: const TripProgressBanner(),
         ),
 
         // Search UI
