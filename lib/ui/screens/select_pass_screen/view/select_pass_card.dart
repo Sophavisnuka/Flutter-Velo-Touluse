@@ -1,96 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
-
-enum PassType {
-  day,
-  monthly,
-  yearly,
-}
 
 class SelectPassCard extends StatelessWidget {
   final PassType type;
   final bool isCurrent;
-  final VoidCallback? onSwitch; // callback when "Switch Plan" is pressed
+  final DateTime? expiresAt;      // only set when isCurrent == true
+  final VoidCallback? onSwitch;
 
   const SelectPassCard({
     super.key,
     required this.type,
     this.isCurrent = false,
+    this.expiresAt,
     this.onSwitch,
   });
 
-  // Getters for icon, color, name, price, details, expireDate
-  IconData get icon {
-    switch (type) {
-      case PassType.day:
-        return Icons.sunny;
-      case PassType.monthly:
-        return Icons.calendar_month;
-      case PassType.yearly:
-        return Icons.calendar_today;
-    }
-  }
-
-  Color get iconColor {
-    switch (type) {
-      case PassType.day:
-        return Colors.deepOrange;
-      case PassType.monthly:
-        return Colors.blue;
-      case PassType.yearly:
-        return Colors.purple;
-    }
-  }
-
-  String get passName {
-    switch (type) {
-      case PassType.day:
-        return 'Day Pass';
-      case PassType.monthly:
-        return 'Monthly Pass';
-      case PassType.yearly:
-        return 'Yearly Pass';
-    }
-  }
-
-  String get price {
-    switch (type) {
-      case PassType.day:
-        return '\$2.50/day';
-      case PassType.monthly:
-        return '\$25.00/month';
-      case PassType.yearly:
-        return '\$250.00/year';
-    }
-  }
-
-  List<String> get details {
-    switch (type) {
-      case PassType.day:
-        return ['Valid for 24 hours from activation', 'Instant Activation'];
-      case PassType.monthly:
-        return ['Valid for 30 days', 'Unlimited rides'];
-      case PassType.yearly:
-        return ['Valid for 365 days', 'Unlimited rides', 'Priority support'];
-    }
-  }
-
-  String get expireDate {
-    switch (type) {
-      case PassType.day:
-        return 'Mar 31, 2026';
-      case PassType.monthly:
-        return 'Apr 30, 2026';
-      case PassType.yearly:
-        return 'Dec 31, 2026';
-    }
+  String get _formattedExpiry {
+    if (expiresAt == null) return '—';
+    return DateFormat('MMM d, yyyy').format(expiresAt!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -98,65 +34,94 @@ class SelectPassCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Top tile with icon, name and price
+          // Header
           ListTileCard(
-            color: iconColor, 
-            icon: icon, 
-            title: passName,
-            subtitle: price,
+            color: type.color,
+            icon: type.icon,
+            title: type.label,
+            subtitle: '${type.price}${type.priceSuffix}',
             bgColor: Colors.white,
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-          // Feature details
-          ...details.map(
+          // Feature bullets
+          ...type.details.map(
             (detail) => ListTile(
-              leading: Icon(Icons.verified, color: Colors.green),
+              leading: const Icon(Icons.verified, color: Colors.green),
               title: Text(detail),
               dense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
           ),
 
-          Divider(),
+          const Divider(),
 
-          // Expire info + switch/current button
+          // Expiry + action
           ListTile(
-            title: Text('Expires'),
-            subtitle: Text(expireDate),
+            title: const Text('Expires'),
+            subtitle: Text(
+              isCurrent ? _formattedExpiry : '—',
+            ),
             trailing: isCurrent
-              ? Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.secondary.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Text(
-                    'Current Pass',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                )
-              : TextButton(
-                  onPressed: onSwitch ?? () {},
-                  style: TextButton.styleFrom(
-                    backgroundColor: AppTheme.primary.withOpacity(0.15),
-                    shape: RoundedRectangleBorder(
+                ? Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondary.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  ),
-                  child: Text(
-                    'Switch Plan',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
+                    child: const Text(
+                      'Current Pass',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : TextButton(
+                    onPressed: () => _confirmSwitch(context),
+                    style: TextButton.styleFrom(
+                      backgroundColor: AppTheme.primary.withOpacity(0.15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                    ),
+                    child: Text(
+                      'Switch Plan',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primary,
+                      ),
                     ),
                   ),
-                ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _confirmSwitch(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Switch to ${type.label}?'),
+        content: const Text(
+          'Your current pass will be replaced immediately.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) onSwitch?.call();
   }
 }

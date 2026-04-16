@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/select_pass_card.dart';
-import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/ui/states/pass_provider.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassScreen extends StatelessWidget {
@@ -8,32 +10,35 @@ class SelectPassScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final passProvider = context.watch<PassProvider>();
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 241, 241),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Your pass',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CurrentPlanCard(
-              bgColor: AppTheme.primary.withOpacity(0.15),
-              color: AppTheme.primary
-            ),
+            padding: const EdgeInsets.only(right: 16),
+            child: CurrentPlanCard(),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: ListView(
-          children: [
-            SelectPassCard(type: PassType.day, isCurrent: true,),
-            SelectPassCard(type: PassType.monthly,),
-            SelectPassCard(type: PassType.yearly,),
-          ],
+          children: PassType.values.where((type) => type != PassType.none).map((type) {
+            final isCurrent = passProvider.currentPass == type;
+            return SelectPassCard(
+              type: type,
+              isCurrent: isCurrent,
+              expiresAt: isCurrent ? passProvider.expiresAt : null,
+              onSwitch: () => passProvider.switchPass(type),
+            );
+          }).toList(),
         ),
       ),
     );

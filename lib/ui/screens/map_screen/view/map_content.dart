@@ -221,10 +221,7 @@ class _MapContentState extends State<MapContent> {
           const SizedBox(height: 10),
 
           // Current Plan (right aligned under search)
-          CurrentPlanCard(
-            bgColor: AppTheme.primary,
-            color: AppTheme.surface,
-          ),
+          CurrentPlanCard(),
 
           const SizedBox(height: 10),
 
