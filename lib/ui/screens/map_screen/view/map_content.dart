@@ -9,7 +9,6 @@ import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/map_legend.dart
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
-import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class MapContent extends StatefulWidget {
@@ -214,10 +213,7 @@ class _MapContentState extends State<MapContent> {
           const SizedBox(height: 10),
 
           // Current Plan (right aligned under search)
-          CurrentPlanCard(
-            bgColor: AppTheme.primary,
-            color: AppTheme.surface,
-          ),
+          CurrentPlanCard(),
 
           const SizedBox(height: 10),
 

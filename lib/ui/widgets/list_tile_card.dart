@@ -8,6 +8,7 @@ class ListTileCard extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.bgColor,
+    this.trailing,
   });
 
   final Color color;
@@ -15,6 +16,7 @@ class ListTileCard extends StatelessWidget {
   final String title;
   final Color? bgColor;
   final String? subtitle;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class ListTileCard extends StatelessWidget {
         ),
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle!) : null,
+        trailing: trailing,
       ),
     );
   }
