@@ -19,13 +19,6 @@ class _RideHistoryContentState extends State<RideHistoryContent> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Reload every time user navigates back to this screen
-    Future.microtask(() => context.read<RideHistoryViewModel>().loadRides());
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),

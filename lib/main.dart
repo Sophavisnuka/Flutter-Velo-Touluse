@@ -10,6 +10,7 @@ import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/data/repositories/user_repository.dart';
 import 'package:velo_toulouse/data/storages/local_user_storage.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
+import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
@@ -43,6 +44,10 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (ctx) => TripViewModel(
           userId: userId,
           rideHistoryRepository: ctx.read<RideHistoryRepository>(),
+        )),
+        ChangeNotifierProvider(create: (ctx) => RideHistoryViewModel(
+          userId: userId,
+          repository: ctx.read<RideHistoryRepository>(),
         )),
         ChangeNotifierProvider(
           create: (ctx) => UserViewModel(
