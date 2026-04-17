@@ -6,11 +6,13 @@ import 'package:velo_toulouse/util/formatter.dart';
 class PassActivatedScreen extends StatefulWidget {
   final PassType newPass;
   final DateTime activatedAt;
+  final bool fromBikeFlow;
 
   const PassActivatedScreen({
     super.key,
     required this.newPass,
     required this.activatedAt,
+    this.fromBikeFlow = false,
   });
 
   @override
@@ -161,7 +163,15 @@ class _PassActivatedScreenState extends State<PassActivatedScreen>
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          if (widget.fromBikeFlow) {
+                            // Pop PassActivatedScreen + SelectPassScreen to land on BikeScreen
+                            int count = 0;
+                            Navigator.of(context).popUntil((_) => count++ >= 2);
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -169,9 +179,9 @@ class _PassActivatedScreenState extends State<PassActivatedScreen>
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Start Riding',
-                          style: TextStyle(
+                        child: Text(
+                          widget.fromBikeFlow ? 'Release My Bike' : 'Start Riding',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

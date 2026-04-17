@@ -5,7 +5,7 @@ class RideHistory {
   final String? endStationName;
   final DateTime startedAt;
   final DateTime? endedAt;
-  final int? durationMinutes;
+  final int? durationSeconds;
 
   const RideHistory({
     required this.id,
@@ -14,10 +14,14 @@ class RideHistory {
     this.endStationName,
     required this.startedAt,
     this.endedAt,
-    this.durationMinutes,
+    this.durationSeconds,
   });
 
   bool get isActive => endedAt == null;
 
-  int get currentDuration => durationMinutes ?? DateTime.now().difference(startedAt).inMinutes;
+  Duration get duration {
+    if (durationSeconds != null) return Duration(seconds: durationSeconds!);
+    if (endedAt != null) return endedAt!.difference(startedAt);
+    return DateTime.now().difference(startedAt);
+  }
 }

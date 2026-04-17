@@ -7,6 +7,8 @@ import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/downgra
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/payment_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_confirm_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_warning_sheet.dart';
+import 'package:velo_toulouse/ui/services/navigation_service.dart';
+import 'package:velo_toulouse/ui/services/notification_service.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
@@ -16,6 +18,7 @@ class SelectPassCard extends StatelessWidget {
   final PassType type;
   final bool isCurrent;
   final DateTime? expiresAt;
+  final bool fromBikeFlow;
   final void Function(DateTime)? onSwitch;
 
   const SelectPassCard({
@@ -23,6 +26,7 @@ class SelectPassCard extends StatelessWidget {
     required this.type,
     this.isCurrent = false,
     this.expiresAt,
+    this.fromBikeFlow = false,
     this.onSwitch,
   });
 
@@ -121,12 +125,27 @@ class SelectPassCard extends StatelessWidget {
     onSwitch?.call(activatedAt);
 
     if (context.mounted) {
+      final notificationService = context.read<NotificationService>();
+      final navigationService = context.read<NavigationService>();
+
+      notificationService.show(InAppNotification(
+        title: 'Pass Activated!',
+        message: 'Ready to ride — tap to go release your bike',
+        icon: Icons.directions_bike_rounded,
+        color: Colors.green,
+        onTap: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          navigationService.goToTab(0);
+        },
+      ));
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => PassActivatedScreen(
             newPass: type,
             activatedAt: activatedAt,
+            fromBikeFlow: fromBikeFlow,
           ),
         ),
       );

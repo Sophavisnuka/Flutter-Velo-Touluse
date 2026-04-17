@@ -75,7 +75,7 @@ class RideCard extends StatelessWidget {
                 Icon(Icons.timer_outlined, size: 14, color: Colors.grey.shade500),
                 const SizedBox(width: 4),
                 Text(
-                  '${ride.currentDuration} min',
+                  Formatter.formatDuration(ride.duration),
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                 ),
               ],

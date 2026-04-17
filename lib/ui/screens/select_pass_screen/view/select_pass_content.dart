@@ -6,7 +6,9 @@ import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/select_
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 
 class SelectPassContent extends StatelessWidget {
-  const SelectPassContent({super.key});
+  final bool fromBikeFlow;
+
+  const SelectPassContent({super.key, this.fromBikeFlow = false});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class SelectPassContent extends StatelessWidget {
               type: type,
               isCurrent: isCurrent,
               expiresAt: expiresAt,
+              fromBikeFlow: fromBikeFlow,
               onSwitch: (at) => userViewModel.switchPlan(type, activatedAt: at),
             );
           }).toList(),
