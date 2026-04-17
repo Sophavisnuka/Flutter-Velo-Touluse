@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/util/formatter.dart';
 
+/// Bottom sheet shown when user tries to switch to a lower-tier pass.
+/// Explains the restriction and shows when the current pass expires.
 class DowngradeBlockedSheet extends StatelessWidget {
   final PassType currentPass;
-  final PassType blockedPass;
   final DateTime? expiresAt;
 
   const DowngradeBlockedSheet({
     super.key,
     required this.currentPass,
-    required this.blockedPass,
     required this.expiresAt,
   });
 
@@ -92,11 +92,12 @@ class DowngradeBlockedSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Text(
-            'Your ${currentPass.label} will expire on $expiryText. You can switch to a higher-tier pass at any time.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-          ),
+          if (expiresAt != null)
+            Text(
+              'Your ${currentPass.label} will expire on $expiryText. You can switch to a higher-tier pass at any time.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+            ),
           const SizedBox(height: 24),
 
           SizedBox(
