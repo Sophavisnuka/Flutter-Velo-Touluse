@@ -15,7 +15,7 @@ class SelectPassCard extends StatelessWidget {
   final PassType type;
   final bool isCurrent;
   final DateTime? expiresAt;
-  final VoidCallback? onSwitch;
+  final void Function(DateTime)? onSwitch;
 
   const SelectPassCard({
     super.key,
@@ -61,14 +61,15 @@ class SelectPassCard extends StatelessWidget {
         backgroundColor: Colors.transparent,
         builder: (_) => DowngradeBlockedSheet(
           currentPass: currentPass,
-          expiresAt: currentExpiresAt, // always the active pass's expiry
+          expiresAt: currentExpiresAt,
         ),
       );
       return;
     }
 
-    // Step 1: Warning sheet (skip if no current pass OR current pass is expired)
-    if (currentPass.isActive && !isPassExpired) {
+    // Show warning only for upgrades (higher tier, active, not expired).
+    // Same-tier early renew skips warning because time is topped up, not lost.
+    if (currentPass.isActive && !isPassExpired && type.tier > currentPass.tier) {
       final continueToConfirm = await showModalBottomSheet<bool>(
         context: context,
         isScrollControlled: true,
@@ -82,7 +83,7 @@ class SelectPassCard extends StatelessWidget {
       if (continueToConfirm != true) return;
     }
 
-    // Step 2: Confirm sheet
+    // Confirm sheet
     if (!context.mounted) return;
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
@@ -96,7 +97,7 @@ class SelectPassCard extends StatelessWidget {
     );
     if (confirmed != true) return;
 
-    // Step 3: Payment sheet
+    // Payment sheet
     if (!context.mounted) return;
     final paid = await showModalBottomSheet<bool>(
       context: context,
@@ -109,9 +110,14 @@ class SelectPassCard extends StatelessWidget {
     );
     if (paid != true) return;
 
-    // Step 4: Activate + full-screen celebration
-    onSwitch?.call();
-    final now = DateTime.now();
+    // For same-tier early renew: new period starts from current expiry (top-up).
+    // For everything else (activate, upgrade, expired renew): starts from now.
+    final bool isSameTierEarlyRenew =
+        isCurrent && !isPassExpired && currentExpiresAt != null;
+    final DateTime activatedAt =
+        isSameTierEarlyRenew ? currentExpiresAt! : DateTime.now();
+
+    onSwitch?.call(activatedAt);
 
     if (context.mounted) {
       Navigator.push(
@@ -119,7 +125,7 @@ class SelectPassCard extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => PassActivatedScreen(
             newPass: type,
-            activatedAt: now,
+            activatedAt: activatedAt,
           ),
         ),
       );
