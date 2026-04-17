@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
-import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/pass_activated_sheet.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_activated_screen.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/downgrade_blocked_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/payment_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_confirm_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_warning_sheet.dart';
@@ -13,7 +14,7 @@ import 'package:velo_toulouse/util/formatter.dart';
 class SelectPassCard extends StatelessWidget {
   final PassType type;
   final bool isCurrent;
-  final DateTime? expiresAt;      // only set when isCurrent == true
+  final DateTime? expiresAt;
   final VoidCallback? onSwitch;
 
   const SelectPassCard({
@@ -24,9 +25,51 @@ class SelectPassCard extends StatelessWidget {
     this.onSwitch,
   });
 
-  Future<void> _confirmSwitch(BuildContext context, PassType currentPass) async {
-    // Step 1: Warning sheet (only if user has an active pass)
-    if (currentPass.isActive) {
+  bool _isExpired() {
+    if (expiresAt == null) return false;
+    return DateTime.now().isAfter(expiresAt!);
+  }
+
+  String _buttonLabel(PassType currentPass) {
+    if (isCurrent) {
+      return _isExpired() ? 'Renew' : 'Renew Early';
+    }
+    if (!currentPass.isActive) return 'Activate Pass';
+    if (type.tier > currentPass.tier) return 'Upgrade';
+    return 'Downgrade';
+  }
+
+  Color _buttonColor(String label) {
+    switch (label) {
+      case 'Renew':
+        return Colors.green;
+      case 'Renew Early':
+        return Colors.orange;
+      case 'Downgrade':
+        return Colors.red;
+      default:
+        return AppTheme.primary;
+    }
+  }
+
+  Future<void> _confirmSwitch(
+      BuildContext context, PassType currentPass, bool isPassExpired) async {
+    // Block downgrade
+    if (currentPass.isActive && type.tier < currentPass.tier) {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => DowngradeBlockedSheet(
+          currentPass: currentPass,
+          expiresAt: expiresAt,
+        ),
+      );
+      return;
+    }
+
+    // Step 1: Warning sheet (skip if no current pass OR current pass is expired)
+    if (currentPass.isActive && !isPassExpired) {
       final continueToConfirm = await showModalBottomSheet<bool>(
         context: context,
         isScrollControlled: true,
@@ -41,6 +84,7 @@ class SelectPassCard extends StatelessWidget {
     }
 
     // Step 2: Confirm sheet
+    if (!context.mounted) return;
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -54,6 +98,7 @@ class SelectPassCard extends StatelessWidget {
     if (confirmed != true) return;
 
     // Step 3: Payment sheet
+    if (!context.mounted) return;
     final paid = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -65,19 +110,18 @@ class SelectPassCard extends StatelessWidget {
     );
     if (paid != true) return;
 
-    // Step 4: Activate pass
+    // Step 4: Activate + full-screen celebration
     onSwitch?.call();
     final now = DateTime.now();
 
     if (context.mounted) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        isDismissible: false,
-        builder: (_) => PassActivatedSheet(
-          newPass: type,
-          activatedAt: now,
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PassActivatedScreen(
+            newPass: type,
+            activatedAt: now,
+          ),
         ),
       );
     }
@@ -85,6 +129,12 @@ class SelectPassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userVm = context.watch<UserViewModel>();
+    final currentPass = userVm.currentPass;
+    final isPassExpired = userVm.isPassExpired;
+    final label = _buttonLabel(currentPass);
+    final btnColor = _buttonColor(label);
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
@@ -94,7 +144,6 @@ class SelectPassCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
           ListTileCard(
             color: type.color,
             icon: type.icon,
@@ -105,7 +154,6 @@ class SelectPassCard extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // Feature bullets
           ...type.details.map(
             (detail) => ListTile(
               leading: const Icon(Icons.verified, color: Colors.green),
@@ -117,48 +165,30 @@ class SelectPassCard extends StatelessWidget {
 
           const Divider(),
 
-          // Expiry + action
           ListTile(
             title: const Text('Expires'),
             subtitle: Text(
               isCurrent ? Formatter.expiry(expiresAt) : '—',
             ),
-            trailing: isCurrent
-                ? Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppTheme.secondary.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Text(
-                      'Current Pass',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  )
-                : TextButton(
-                    // In SelectPassCard, update the Switch Plan button:
-                    onPressed: () {
-                      final currentPass = context.read<UserViewModel>().currentPass;
-                      _confirmSwitch(context, currentPass);
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: AppTheme.primary.withOpacity(0.15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                    ),
-                    child: Text(
-                      'Switch Plan',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primary,
-                      ),
-                    ),
-                  ),
+            trailing: TextButton(
+              onPressed: () =>
+                  _confirmSwitch(context, currentPass, isPassExpired),
+              style: TextButton.styleFrom(
+                backgroundColor: btnColor.withOpacity(0.15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: btnColor,
+                ),
+              ),
+            ),
           ),
         ],
       ),
