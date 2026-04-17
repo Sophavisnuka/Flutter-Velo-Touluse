@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velo_toulouse/ui/states/pass_provider.dart';
+import 'package:velo_toulouse/ui/states/user_view_model.dart'; // 👈 updated import
 
 class CurrentPlanCard extends StatelessWidget {
   const CurrentPlanCard({
@@ -14,7 +14,29 @@ class CurrentPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pass = context.watch<PassProvider>().currentPass;
+
+    final viewModel = context.watch<UserViewModel>();
+
+    if (viewModel.isLoading || viewModel.user == null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: const SizedBox(
+          width: 60,
+          height: 14,
+          child: LinearProgressIndicator(
+            backgroundColor: Colors.transparent,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    final pass = viewModel.currentPass;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(

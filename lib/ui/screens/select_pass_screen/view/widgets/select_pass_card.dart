@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/pass_activated_sheet.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/payment_sheet.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_confirm_sheet.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_warning_sheet.dart';
+import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class SelectPassCard extends StatelessWidget {
   final PassType type;
@@ -18,9 +24,63 @@ class SelectPassCard extends StatelessWidget {
     this.onSwitch,
   });
 
-  String get _formattedExpiry {
-    if (expiresAt == null) return '—';
-    return DateFormat('MMM d, yyyy').format(expiresAt!);
+  Future<void> _confirmSwitch(BuildContext context, PassType currentPass) async {
+    // Step 1: Warning sheet (only if user has an active pass)
+    if (currentPass.isActive) {
+      final continueToConfirm = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => SwitchWarningSheet(
+          currentPass: currentPass,
+          newPass: type,
+          onContinue: () => Navigator.pop(context, true),
+        ),
+      );
+      if (continueToConfirm != true) return;
+    }
+
+    // Step 2: Confirm sheet
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SwitchConfirmSheet(
+        currentPass: currentPass,
+        newPass: type,
+        onConfirm: () => Navigator.pop(context, true),
+      ),
+    );
+    if (confirmed != true) return;
+
+    // Step 3: Payment sheet
+    final paid = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => PaymentSheet(
+        newPass: type,
+        onPaid: () => Navigator.pop(context, true),
+      ),
+    );
+    if (paid != true) return;
+
+    // Step 4: Activate pass
+    onSwitch?.call();
+    final now = DateTime.now();
+
+    if (context.mounted) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        isDismissible: false,
+        builder: (_) => PassActivatedSheet(
+          newPass: type,
+          activatedAt: now,
+        ),
+      );
+    }
   }
 
   @override
@@ -61,7 +121,7 @@ class SelectPassCard extends StatelessWidget {
           ListTile(
             title: const Text('Expires'),
             subtitle: Text(
-              isCurrent ? _formattedExpiry : '—',
+              isCurrent ? Formatter.expiry(expiresAt) : '—',
             ),
             trailing: isCurrent
                 ? Container(
@@ -76,7 +136,11 @@ class SelectPassCard extends StatelessWidget {
                     ),
                   )
                 : TextButton(
-                    onPressed: () => _confirmSwitch(context),
+                    // In SelectPassCard, update the Switch Plan button:
+                    onPressed: () {
+                      final currentPass = context.read<UserViewModel>().currentPass;
+                      _confirmSwitch(context, currentPass);
+                    },
                     style: TextButton.styleFrom(
                       backgroundColor: AppTheme.primary.withOpacity(0.15),
                       shape: RoundedRectangleBorder(
@@ -99,29 +163,5 @@ class SelectPassCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _confirmSwitch(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Switch to ${type.label}?'),
-        content: const Text(
-          'Your current pass will be replaced immediately.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) onSwitch?.call();
   }
 }

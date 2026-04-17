@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/util/formatter.dart';
 
 class TripSummaryScreen extends StatelessWidget {
   final Duration duration;
@@ -12,15 +13,6 @@ class TripSummaryScreen extends StatelessWidget {
     required this.startStationName,
     required this.endStationName,
   });
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60);
-    final s = d.inSeconds.remainder(60);
-    if (h > 0) return '${h}h ${m}m ${s}s';
-    if (m > 0) return '${m}m ${s}s';
-    return '${s}s';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +88,7 @@ class TripSummaryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatDuration(duration),
+                      Formatter.formatDuration(duration),
                       style: const TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
