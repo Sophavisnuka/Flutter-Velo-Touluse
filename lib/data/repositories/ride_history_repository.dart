@@ -3,14 +3,17 @@ import 'package:velo_toulouse/data/dto/ride_history_dto.dart';
 import 'package:velo_toulouse/model/ride_history.dart';
 
 class RideHistoryRepository {
-  final _db = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore;
 
-  CollectionReference _userRides(String userId) =>
-      _db.collection('users').doc(userId).collection('rides');
+  const RideHistoryRepository({required this.firestore});
 
   Future<String> saveRide(RideHistory ride) async {
-    final doc = await _userRides(ride.userId).add(RideHistoryDto.toFirestore(ride));
-    return doc.id; // return id so you can update it later when ride ends
+    final doc = await firestore
+        .collection('users')
+        .doc(ride.userId)
+        .collection('rides')
+        .add(RideHistoryDto.toFirestore(ride));
+    return doc.id;
   }
 
   Future<void> completeRide({
@@ -20,7 +23,12 @@ class RideHistoryRepository {
     required DateTime startedAt,
     required DateTime endedAt,
   }) async {
-    await _userRides(userId).doc(rideId).update({
+    await firestore
+        .collection('users')
+        .doc(userId)
+        .collection('rides')
+        .doc(rideId)
+        .update({
       'endStationName': endStationName,
       'endedAt': Timestamp.fromDate(endedAt),
       'durationMinutes': endedAt.difference(startedAt).inMinutes,
@@ -28,12 +36,18 @@ class RideHistoryRepository {
   }
 
   Future<List<RideHistory>> getRidesForUser(String userId) async {
-    final snapshot = await _userRides(userId)
-        .orderBy('startedAt', descending: true) // no composite index needed now!
-        .get();
+    final snapshot = await firestore
+      .collection('users')
+      .doc(userId)
+      .collection('rides')
+      .orderBy('startedAt', descending: true)
+      .get();
 
     return snapshot.docs
-        .map((doc) => RideHistoryDto.fromFirestore(doc.id, doc.data() as Map<String, dynamic>))
-        .toList();
+      .map((doc) => RideHistoryDto.fromFirestore(
+        doc.id,
+        doc.data(),
+      ))
+      .toList();
   }
 }

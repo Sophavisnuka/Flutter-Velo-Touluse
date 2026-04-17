@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> screens = [
     MapScreen(),
     SelectPassScreen(),
-    RideHistoryScreen(),
+    HistoryScreen(),
     ProfileScreen(),
   ];
 
