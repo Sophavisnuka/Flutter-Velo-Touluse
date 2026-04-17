@@ -10,6 +10,8 @@ import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/trip_summary_screen.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/screens/bike_screen/view/widgets/no_pass_sheet.dart';
+import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class BikeContent extends StatelessWidget {
@@ -18,6 +20,18 @@ class BikeContent extends StatelessWidget {
   const BikeContent({super.key, required this.stationName});
 
   void _showReleaseConfirmation(BuildContext context, Slot slot) {
+    final userVm = context.read<UserViewModel>();
+
+    if (!userVm.currentPass.isActive) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (_) => const NoPassSheet(),
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

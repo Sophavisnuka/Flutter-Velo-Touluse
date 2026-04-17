@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart'; // 👈 updated import
+import 'package:velo_toulouse/ui/states/user_view_model.dart';
 
 class CurrentPlanCard extends StatelessWidget {
   const CurrentPlanCard({
     super.key,
     this.color,
-    this.bgColor
+    this.bgColor,
+    this.onTap,
   });
 
   final Color? color;
   final Color? bgColor;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-
     final viewModel = context.watch<UserViewModel>();
 
     if (viewModel.isLoading || viewModel.user == null) {
@@ -37,27 +38,38 @@ class CurrentPlanCard extends StatelessWidget {
 
     final pass = viewModel.currentPass;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    final card = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: pass.color.withOpacity(0.15),
+        color: (bgColor ?? pass.color).withOpacity(0.15),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(pass.icon, size: 14, color: pass.color),
+          Icon(pass.icon, size: 14, color: color ?? pass.color),
           const SizedBox(width: 6),
           Text(
             pass.label,
             style: TextStyle(
-              color: pass.color,
+              color: color ?? pass.color,
               fontWeight: FontWeight.bold,
               fontSize: 13,
             ),
           ),
+          if (onTap != null) ...[
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right, size: 14, color: color ?? pass.color),
+          ],
         ],
       ),
+    );
+
+    if (onTap == null) return card;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: card,
     );
   }
 }
