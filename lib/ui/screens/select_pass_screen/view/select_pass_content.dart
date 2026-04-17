@@ -40,7 +40,7 @@ class SelectPassContent extends StatelessWidget {
               type: type,
               isCurrent: isCurrent,
               expiresAt: expiresAt,
-              onSwitch: () => userViewModel.switchPlan(type),
+              onSwitch: (at) => userViewModel.switchPlan(type, activatedAt: at),
             );
           }).toList(),
         ),
