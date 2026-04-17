@@ -9,6 +9,9 @@ import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.d
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_detail_screen.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
+import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 import 'package:velo_toulouse/ui/widgets/trip_progress_banner.dart';
 
@@ -220,7 +223,22 @@ class _MapContentState extends State<MapContent> {
           const SizedBox(height: 10),
 
           // Current Plan (right aligned under search)
-          CurrentPlanCard(),
+          CurrentPlanCard(
+            onTap: () {
+              final userVm = context.read<UserViewModel>();
+              if (userVm.currentPass.isActive) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PassDetailScreen()),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SelectPassScreen()),
+                );
+              }
+            },
+          ),
 
           const SizedBox(height: 10),
 
