@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_activated_screen.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_detail_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/downgrade_blocked_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/payment_sheet.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_confirm_sheet.dart';
@@ -141,7 +142,7 @@ class SelectPassCard extends StatelessWidget {
     final label = _buttonLabel(currentPass, isPassExpired);
     final btnColor = _buttonColor(label);
 
-    return Container(
+    final card = Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       decoration: BoxDecoration(
@@ -198,6 +199,16 @@ class SelectPassCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (!isCurrent) return card;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PassDetailScreen()),
+      ),
+      child: card,
     );
   }
 }
