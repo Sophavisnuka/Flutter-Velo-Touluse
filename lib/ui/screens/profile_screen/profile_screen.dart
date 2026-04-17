@@ -5,6 +5,7 @@ import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 import 'package:velo_toulouse/ui/widgets/primary_button.dart';
+import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_detail_screen.dart';
 import 'package:velo_toulouse/util/formatter.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -76,14 +77,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildPlanCard(BuildContext context) {
-
     final provider = context.watch<UserViewModel>();
     final user = provider.user;
     final pass = user?.passType ?? PassType.none;
     final expiry = provider.expiresAt;
     final expiryText = expiry != null ? Formatter.expiry(expiry) : '—';
-    
-    return Transform.translate(
+
+    final card = Transform.translate(
       offset: const Offset(0, -20),
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -113,7 +113,6 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Badge: Active or No Plan
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
@@ -131,9 +130,23 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
+            if (pass.isActive) ...[
+              const SizedBox(width: 6),
+              const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+            ],
           ],
         ),
       ),
+    );
+
+    if (!pass.isActive) return card;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PassDetailScreen()),
+      ),
+      child: card,
     );
   }
 
