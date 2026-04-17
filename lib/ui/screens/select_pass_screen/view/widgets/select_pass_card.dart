@@ -25,18 +25,14 @@ class SelectPassCard extends StatelessWidget {
     this.onSwitch,
   });
 
-  bool _isExpired() {
-    if (expiresAt == null) return false;
-    return DateTime.now().isAfter(expiresAt!);
-  }
-
-  String _buttonLabel(PassType currentPass) {
+  String _buttonLabel(PassType currentPass, bool isExpired) {
     if (isCurrent) {
-      return _isExpired() ? 'Renew' : 'Renew Early';
+      return isExpired ? 'Renew' : 'Renew Early';
     }
     if (!currentPass.isActive) return 'Activate Pass';
     if (type.tier > currentPass.tier) return 'Upgrade';
-    return 'Downgrade';
+    assert(type.tier < currentPass.tier, 'Same-tier non-current card should not reach here');
+    return 'Downgrade'; // type.tier < currentPass.tier
   }
 
   Color _buttonColor(String label) {
@@ -53,7 +49,10 @@ class SelectPassCard extends StatelessWidget {
   }
 
   Future<void> _confirmSwitch(
-      BuildContext context, PassType currentPass, bool isPassExpired) async {
+      BuildContext context,
+      PassType currentPass,
+      bool isPassExpired,
+      DateTime? currentExpiresAt) async {
     // Block downgrade
     if (currentPass.isActive && type.tier < currentPass.tier) {
       await showModalBottomSheet(
@@ -62,7 +61,7 @@ class SelectPassCard extends StatelessWidget {
         backgroundColor: Colors.transparent,
         builder: (_) => DowngradeBlockedSheet(
           currentPass: currentPass,
-          expiresAt: expiresAt,
+          expiresAt: currentExpiresAt, // always the active pass's expiry
         ),
       );
       return;
@@ -132,7 +131,8 @@ class SelectPassCard extends StatelessWidget {
     final userVm = context.watch<UserViewModel>();
     final currentPass = userVm.currentPass;
     final isPassExpired = userVm.isPassExpired;
-    final label = _buttonLabel(currentPass);
+    final currentExpiresAt = userVm.expiresAt;
+    final label = _buttonLabel(currentPass, isPassExpired);
     final btnColor = _buttonColor(label);
 
     return Container(
@@ -172,7 +172,7 @@ class SelectPassCard extends StatelessWidget {
             ),
             trailing: TextButton(
               onPressed: () =>
-                  _confirmSwitch(context, currentPass, isPassExpired),
+                  _confirmSwitch(context, currentPass, isPassExpired, currentExpiresAt),
               style: TextButton.styleFrom(
                 backgroundColor: btnColor.withOpacity(0.15),
                 shape: RoundedRectangleBorder(
