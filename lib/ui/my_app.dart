@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:velo_toulouse/ui/screens/history_screen/history_screen.dart';
+import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/map_screen.dart';
 import 'package:velo_toulouse/ui/screens/profile_screen/profile_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
@@ -36,7 +38,12 @@ class _MyAppState extends State<MyApp> {
         ),
         bottomNavigationBar: BottomNavBar(
           currentIndex: _currentIndex,
-          onTabChanged: (index) => setState(() => _currentIndex = index),
+          onTabChanged: (index) {
+            setState(() => _currentIndex = index);
+            if (index == 2) {
+              context.read<RideHistoryViewModel>().loadRides();
+            }
+          },
         ),
       ),
     );
