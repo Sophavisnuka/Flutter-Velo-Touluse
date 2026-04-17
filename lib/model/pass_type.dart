@@ -63,7 +63,13 @@ enum PassType {
   bool get isActive => this != PassType.none;
 
   /// Tier rank used to block downgrades. none=0, day=1, monthly=2, yearly=3.
-  int get tier => index;
+  /// Uses an explicit map so reordering enum variants never silently corrupts comparisons.
+  int get tier => const {
+    PassType.none: 0,
+    PassType.day: 1,
+    PassType.monthly: 2,
+    PassType.yearly: 3,
+  }[this]!;
 
   /// Computes the expiry date dynamically from activation date
   DateTime? expiresAt(DateTime activatedAt) {
