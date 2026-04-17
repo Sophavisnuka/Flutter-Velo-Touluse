@@ -48,13 +48,13 @@ class UserViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> switchPlan(PassType newPass) async {
+  Future<void> switchPlan(PassType newPass, {DateTime? activatedAt}) async {
     if (_user == null) return;
 
     _isLoading = true;
     notifyListeners();
 
-    final now = DateTime.now();
+    final now = activatedAt ?? DateTime.now();
 
     _user = User(
       userId: _user!.userId,
