@@ -5,7 +5,9 @@ import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history
 import 'package:velo_toulouse/ui/screens/map_screen/map_screen.dart';
 import 'package:velo_toulouse/ui/screens/profile_screen/profile_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
+import 'package:velo_toulouse/ui/services/navigation_service.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
+import 'package:velo_toulouse/ui/widgets/app_notification_banner.dart';
 import 'package:velo_toulouse/ui/widgets/bottom_nav_bar.dart';
 
 class MyApp extends StatefulWidget {
@@ -16,8 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _currentIndex = 0;
-
   final List<Widget> screens = [
     MapScreen(),
     SelectPassScreen(),
@@ -27,19 +27,34 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final navService = context.watch<NavigationService>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child!,
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: AppNotificationBanner(),
+              ),
+            ),
+          ],
+        );
+      },
       home: Scaffold(
         extendBody: true,
         body: IndexedStack(
-          index: _currentIndex,
+          index: navService.currentTab,
           children: screens,
         ),
         bottomNavigationBar: BottomNavBar(
-          currentIndex: _currentIndex,
+          currentIndex: navService.currentTab,
           onTabChanged: (index) {
-            setState(() => _currentIndex = index);
+            context.read<NavigationService>().goToTab(index);
             if (index == 2) {
               context.read<RideHistoryViewModel>().loadRides();
             }

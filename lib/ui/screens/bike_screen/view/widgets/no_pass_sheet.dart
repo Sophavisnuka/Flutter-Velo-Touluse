@@ -56,7 +56,7 @@ class NoPassSheet extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const SelectPassScreen()),
+                  MaterialPageRoute(builder: (_) => const SelectPassScreen(fromBikeFlow: true)),
                 );
               },
               style: ElevatedButton.styleFrom(

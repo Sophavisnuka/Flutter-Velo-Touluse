@@ -12,6 +12,8 @@ import 'package:velo_toulouse/data/storages/local_user_storage.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
 import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
+import 'package:velo_toulouse/ui/services/navigation_service.dart';
+import 'package:velo_toulouse/ui/services/notification_service.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
 import 'firebase_options.dart';
@@ -40,6 +42,8 @@ Future<void> main() async {
       providers: [
         Provider(create: (_) => StationRepository(firestore: firestore)),
         Provider(create: (_) => RideHistoryRepository(firestore: firestore)),
+        ChangeNotifierProvider(create: (_) => NavigationService()),
+        ChangeNotifierProvider(create: (_) => NotificationService()),
         ChangeNotifierProvider(create: (ctx) => MapViewModel(repo: ctx.read<StationRepository>())),
         ChangeNotifierProvider(create: (ctx) => TripViewModel(
           userId: userId,

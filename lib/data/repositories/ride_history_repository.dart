@@ -31,7 +31,7 @@ class RideHistoryRepository {
         .update({
       'endStationName': endStationName,
       'endedAt': Timestamp.fromDate(endedAt),
-      'durationMinutes': endedAt.difference(startedAt).inMinutes,
+      'durationSeconds': endedAt.difference(startedAt).inSeconds,
     });
   }
 

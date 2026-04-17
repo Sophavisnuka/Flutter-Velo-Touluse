@@ -3,6 +3,12 @@ import 'package:velo_toulouse/model/ride_history.dart';
 
 class RideHistoryDto {
   static RideHistory fromFirestore(String id, Map<String, dynamic> json) {
+    // Support old records that stored durationMinutes instead of durationSeconds
+    int? durationSeconds = json['durationSeconds'];
+    if (durationSeconds == null && json['durationMinutes'] != null) {
+      durationSeconds = (json['durationMinutes'] as int) * 60;
+    }
+
     return RideHistory(
       id: id,
       userId: json['userId'],
@@ -10,7 +16,7 @@ class RideHistoryDto {
       endStationName: json['endStationName'],
       startedAt: (json['startedAt'] as Timestamp).toDate(),
       endedAt: (json['endedAt'] as Timestamp?)?.toDate(),
-      durationMinutes: json['durationMinutes'],
+      durationSeconds: durationSeconds,
     );
   }
 
@@ -21,7 +27,7 @@ class RideHistoryDto {
       'endStationName': ride.endStationName,
       'startedAt': Timestamp.fromDate(ride.startedAt),
       'endedAt': ride.endedAt != null ? Timestamp.fromDate(ride.endedAt!) : null,
-      'durationMinutes': ride.durationMinutes,
+      'durationSeconds': ride.durationSeconds,
     };
   }
 }

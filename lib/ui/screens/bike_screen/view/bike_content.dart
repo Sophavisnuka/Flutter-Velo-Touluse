@@ -11,6 +11,9 @@ import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.d
 import 'package:velo_toulouse/ui/screens/trip_screen/trip_summary_screen.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/view/widgets/no_pass_sheet.dart';
+import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
+import 'package:velo_toulouse/ui/services/navigation_service.dart';
+import 'package:velo_toulouse/ui/services/notification_service.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 
@@ -88,6 +91,12 @@ class BikeContent extends StatelessWidget {
             // Clear the selected station so the map's .then() callback
             // doesn't re-open the popup when BikeScreen is removed from stack.
             context.read<MapViewModel>().clearSelectedStation();
+
+            // Capture services before navigation clears the context
+            final notificationService = context.read<NotificationService>();
+            final navigationService = context.read<NavigationService>();
+            final historyVm = context.read<RideHistoryViewModel>();
+
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -99,6 +108,17 @@ class BikeContent extends StatelessWidget {
               ),
               (route) => route.isFirst,
             );
+
+            notificationService.show(InAppNotification(
+              title: 'Trip Complete!',
+              message: 'Your ride has been saved. Tap to view history.',
+              icon: Icons.history_rounded,
+              color: const Color(0xFF0066CC),
+              onTap: () {
+                navigationService.goToTab(2);
+                historyVm.loadRides();
+              },
+            ));
           }
         },
         onCancel: () => Navigator.pop(context),
