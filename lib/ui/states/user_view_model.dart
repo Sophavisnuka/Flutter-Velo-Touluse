@@ -10,6 +10,7 @@ class UserViewModel extends ChangeNotifier {
 
   User? _user;
   bool _isLoading = false;
+  String? get userId => _user?.userId;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
@@ -29,7 +30,7 @@ class UserViewModel extends ChangeNotifier {
     } else {
       final newUser = User(
         userId: userId,
-        username: 'Ronan the best',
+        username: 'Guest',
         passType: PassType.none,
         activatedAt: null,
       );

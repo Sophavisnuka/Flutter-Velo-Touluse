@@ -5,14 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/config/map_box_config.dart';
+import 'package:velo_toulouse/data/repositories/ride_history_repository.dart';
 import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/data/repositories/user_repository.dart';
 import 'package:velo_toulouse/data/storages/local_user_storage.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
+import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 const bool enableDevicePreview = true;
@@ -34,13 +37,21 @@ Future<void> main() async {
   final firestore = FirebaseFirestore.instance;
   final StationRepository stationRepo = StationRepository(firestore: firestore);
   final userId = await LocalUserStorage.getOrCreateUserId();
+  final RideHistoryRepository ride = RideHistoryRepository();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MapViewModel(repo: stationRepo)),
         ChangeNotifierProvider(create: (_) => BikeViewModel(repo: stationRepo)),
-        ChangeNotifierProvider(create: (_) => TripViewModel()),
+        ChangeNotifierProvider(create: (context) => TripViewModel(
+          userId: userId, 
+          rideHistoryRepository: ride,
+        )),
+        ChangeNotifierProvider(create: (_) => RideHistoryViewModel(
+          userId: userId, 
+          repository: ride
+        )),
         ChangeNotifierProvider(
           create: (_) => UserViewModel(
             UserRepository(firestore: FirebaseFirestore.instance),

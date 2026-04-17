@@ -1,28 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:velo_toulouse/data/repositories/ride_history_repository.dart';
 import 'package:velo_toulouse/model/slot.dart';
+import 'package:velo_toulouse/model/ride_history.dart';
 
 class TripViewModel extends ChangeNotifier {
+  final RideHistoryRepository _rideHistoryRepository;
+  final String userId; // pass current user id in
+
+  TripViewModel({
+    required this.userId, 
+    required RideHistoryRepository rideHistoryRepository,
+  })
+      : _rideHistoryRepository = rideHistoryRepository;
+
   bool isTripActive = false;
   Slot? activeTripSlot;
   String? activeStartStationName;
   String? activeEndStationName;
   DateTime? tripStartTime;
   DateTime? tripEndTime;
+  String? _activeRideId; // track the saved ride so we can update it later
 
-  void startTrip({required Slot slot, required String stationName}) {
+  Future<void> startTrip({required Slot slot, required String stationName}) async {
     isTripActive = true;
     activeTripSlot = slot;
     activeStartStationName = stationName;
     activeEndStationName = null;
     tripStartTime = DateTime.now();
     tripEndTime = null;
+
+    // Save ride to Firestore
+    final ride = RideHistory(
+      id: '',
+      userId: userId,
+      startStationName: stationName,
+      startedAt: tripStartTime!,
+    );
+    _activeRideId = await _rideHistoryRepository.saveRide(ride);
+
     notifyListeners();
   }
 
-  void endTrip({required String endStationName}) {
+  Future<void> endTrip({required String endStationName}) async {
     isTripActive = false;
     activeEndStationName = endStationName;
     tripEndTime = DateTime.now();
+
+    // Complete the ride in Firestore
+    if (_activeRideId != null) {
+      await _rideHistoryRepository.completeRide(
+        userId: userId,
+        rideId: _activeRideId!,
+        endStationName: endStationName,
+        startedAt: tripStartTime!,
+        endedAt: tripEndTime!,
+      );
+      _activeRideId = null;
+    }
+
     notifyListeners();
   }
 

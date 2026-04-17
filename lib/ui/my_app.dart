@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velo_toulouse/ui/screens/history_screen.dart';
+import 'package:velo_toulouse/ui/screens/history_screen/history_screen.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/map_screen.dart';
 import 'package:velo_toulouse/ui/screens/profile_screen/profile_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> screens = [
     MapScreen(),
     SelectPassScreen(),
-    HistoryScreen(),
+    RideHistoryScreen(),
     ProfileScreen(),
   ];
 
