@@ -5,11 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/config/map_box_config.dart';
+import 'package:velo_toulouse/data/repositories/ride_history_repository.dart';
 import 'package:velo_toulouse/data/repositories/station_repository.dart';
 import 'package:velo_toulouse/data/repositories/user_repository.dart';
 import 'package:velo_toulouse/data/storages/local_user_storage.dart';
 import 'package:velo_toulouse/ui/my_app.dart';
-import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/states/user_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
@@ -32,26 +32,28 @@ Future<void> main() async {
   );
 
   final firestore = FirebaseFirestore.instance;
-  final StationRepository stationRepo = StationRepository(firestore: firestore);
   final userId = await LocalUserStorage.getOrCreateUserId();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => MapViewModel(repo: stationRepo)),
-        ChangeNotifierProvider(create: (_) => BikeViewModel(repo: stationRepo)),
-        ChangeNotifierProvider(create: (_) => TripViewModel()),
+        Provider(create: (_) => StationRepository(firestore: firestore)),
+        Provider(create: (_) => RideHistoryRepository(firestore: firestore)),
+        ChangeNotifierProvider(create: (ctx) => MapViewModel(repo: ctx.read<StationRepository>())),
+        ChangeNotifierProvider(create: (ctx) => TripViewModel(
+          userId: userId,
+          rideHistoryRepository: ctx.read<RideHistoryRepository>(),
+        )),
         ChangeNotifierProvider(
-          create: (_) => UserViewModel(
-            UserRepository(firestore: FirebaseFirestore.instance),
-          )..loadUser(userId), //loads or creates the guest user in Firestore
-          child: const MyApp(),
+          create: (ctx) => UserViewModel(
+            UserRepository(firestore: firestore),
+          )..loadUser(userId),
         ),
       ],
       child: DevicePreview(
         enabled: true,
         builder: (context) => MyApp(),
       ),
-    ),
+    )
   );
 }
