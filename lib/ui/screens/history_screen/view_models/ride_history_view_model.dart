@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velo_toulouse/data/repositories/ride_history_repository.dart';
+import 'package:velo_toulouse/data/repositories/ride_history/ride_history_repository.dart';
 import 'package:velo_toulouse/model/ride_history.dart';
 
 class RideHistoryViewModel extends ChangeNotifier {

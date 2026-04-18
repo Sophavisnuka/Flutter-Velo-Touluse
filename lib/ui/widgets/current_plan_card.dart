@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 
 class CurrentPlanCard extends StatelessWidget {
   const CurrentPlanCard({
@@ -16,7 +16,7 @@ class CurrentPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<UserViewModel>();
+    final viewModel = context.watch<UserGlobalState>();
 
     if (viewModel.isLoading || viewModel.user == null) {
       return Container(

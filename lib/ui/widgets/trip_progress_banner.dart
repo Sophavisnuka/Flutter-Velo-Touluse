@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/trip_screen.dart';
-import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/states/trip_global_state.dart';
 
 class TripProgressBanner extends StatefulWidget {
   const TripProgressBanner({super.key});
@@ -37,7 +37,7 @@ class _TripProgressBannerState extends State<TripProgressBanner> {
 
   @override
   Widget build(BuildContext context) {
-    final tripVm = context.watch<TripViewModel>();
+    final tripVm = context.watch<TripGlobalState>();
     if (!tripVm.isTripActive) return const SizedBox.shrink();
 
     return GestureDetector(

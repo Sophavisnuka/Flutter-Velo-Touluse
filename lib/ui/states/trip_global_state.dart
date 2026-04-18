@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:velo_toulouse/data/repositories/ride_history_repository.dart';
+import 'package:velo_toulouse/data/repositories/ride_history/ride_history_repository.dart';
 import 'package:velo_toulouse/model/slot.dart';
 import 'package:velo_toulouse/model/ride_history.dart';
 
-class TripViewModel extends ChangeNotifier {
+class TripGlobalState extends ChangeNotifier {
   final RideHistoryRepository _rideHistoryRepository;
   final String userId; // pass current user id in
 
-  TripViewModel({
+  TripGlobalState({
     required this.userId, 
     required RideHistoryRepository rideHistoryRepository,
   })

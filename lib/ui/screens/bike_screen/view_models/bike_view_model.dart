@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velo_toulouse/data/repositories/station_repository.dart';
+import 'package:velo_toulouse/data/repositories/stations/station_repository.dart';
 import 'package:velo_toulouse/model/station.dart';
 
 class BikeViewModel extends ChangeNotifier {

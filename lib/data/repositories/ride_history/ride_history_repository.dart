@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:velo_toulouse/data/dto/ride_history_dto.dart';
+import 'package:velo_toulouse/data/repositories/ride_history/abastract_ride_repo.dart';
 import 'package:velo_toulouse/model/ride_history.dart';
 
-class RideHistoryRepository {
+class RideHistoryRepository implements AbstractRideRepo{
   final FirebaseFirestore firestore;
 
   const RideHistoryRepository({required this.firestore});
 
+  @override
   Future<String> saveRide(RideHistory ride) async {
     final doc = await firestore
         .collection('users')
@@ -16,6 +18,7 @@ class RideHistoryRepository {
     return doc.id;
   }
 
+  @override
   Future<void> completeRide({
     required String userId,
     required String rideId,
@@ -35,6 +38,7 @@ class RideHistoryRepository {
     });
   }
 
+  @override
   Future<List<RideHistory>> getRidesForUser(String userId) async {
     final snapshot = await firestore
       .collection('users')
