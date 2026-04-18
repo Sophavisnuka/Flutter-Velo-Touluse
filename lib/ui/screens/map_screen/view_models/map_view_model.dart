@@ -1,7 +1,7 @@
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:velo_toulouse/data/repositories/station_repository.dart';
+import 'package:velo_toulouse/data/repositories/stations/station_repository.dart';
 import 'package:velo_toulouse/model/station.dart';
 
 class MapViewModel extends ChangeNotifier {

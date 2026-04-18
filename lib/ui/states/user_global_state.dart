@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velo_toulouse/data/repositories/user_repository.dart';
+import 'package:velo_toulouse/data/repositories/users/user_repository.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/model/user.dart';
 
