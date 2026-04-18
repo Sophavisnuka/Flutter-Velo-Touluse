@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 import 'package:velo_toulouse/ui/widgets/primary_button.dart';
@@ -44,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final userVm = context.watch<UserViewModel>();
+    final userVm = context.watch<UserGlobalState>();
     final user = userVm.user;
     return Container(
       width: double.infinity,
@@ -77,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildPlanCard(BuildContext context) {
-    final provider = context.watch<UserViewModel>();
+    final provider = context.watch<UserGlobalState>();
     final user = provider.user;
     final pass = user?.passType ?? PassType.none;
     final expiry = provider.expiresAt;

@@ -8,10 +8,10 @@ import 'package:velo_toulouse/ui/screens/bike_screen/bike_screen.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_marker.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view/widgets/station_popup.dart';
-import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/states/trip_global_state.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/pass_detail_screen.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 import 'package:velo_toulouse/ui/widgets/current_plan_card.dart';
 import 'package:velo_toulouse/ui/widgets/trip_progress_banner.dart';
 
@@ -25,6 +25,7 @@ class MapContent extends StatefulWidget {
 class _MapContentState extends State<MapContent> {
   bool _initialized = false;
   bool _navigatingToDetails = false;
+  MapController mapController = MapController();
 
   @override
   void didChangeDependencies() {
@@ -44,7 +45,7 @@ class _MapContentState extends State<MapContent> {
     final popupEstimatedHeight = 260.0 + MediaQuery.of(context).padding.bottom;
     final cameraShiftDown =
         ((popupEstimatedHeight - topAreaHeight) / 2).clamp(20.0, 200.0);
-    viewModel.selectStation(station, cameraShiftDown: cameraShiftDown);
+    viewModel.selectStation(station, mapController, cameraShiftDown: cameraShiftDown);
 
     // Use a transparent modal barrier so the selected marker (rendered in the
     // Stack above our custom dark overlay) is not covered by the Navigator-level barrier.
@@ -64,7 +65,7 @@ class _MapContentState extends State<MapContent> {
               ))
               .then((_) {
             _navigatingToDetails = false;
-            final tripVm = context.read<TripViewModel>();
+            final tripVm = context.read<TripGlobalState>();
             if (mounted &&
                 viewModel.selectedStation != null &&
                 !tripVm.isTripActive) {
@@ -92,7 +93,7 @@ class _MapContentState extends State<MapContent> {
     if (selected == null) return [];
 
     try {
-      final screenOffset = viewModel.mapController.camera.latLngToScreenOffset(
+      final screenOffset = mapController.camera.latLngToScreenOffset(
         LatLng(selected.location.latitude, selected.location.longitude),
       );
 
@@ -129,7 +130,7 @@ class _MapContentState extends State<MapContent> {
     return Stack(
       children: [
         FlutterMap(
-          mapController: viewModel.mapController,
+          mapController: mapController,
           options: const MapOptions(
             initialCenter: LatLng(13.3615, 103.8590),
             initialZoom: 14,
@@ -145,24 +146,24 @@ class _MapContentState extends State<MapContent> {
             // Exclude the selected station — it is rendered separately above the overlay.
             MarkerLayer(
               markers: viewModel.stations
-                  .where((s) =>
-                      !hasSelection ||
-                      s.stationId != viewModel.selectedStation!.stationId)
-                  .map((station) => Marker(
-                        point: LatLng(
-                          station.location.latitude,
-                          station.location.longitude,
-                        ),
-                        width: 130,
-                        height: 70,
-                        child: GestureDetector(
-                          onTap: () => _showStationPopup(station),
-                          child: StationMarker(
-                            availableBike: station.availableBike,
-                          ),
-                        ),
-                      ))
-                  .toList(),
+                .where((s) =>
+                  !hasSelection ||
+                  s.stationId != viewModel.selectedStation!.stationId)
+                .map((station) => Marker(
+                  point: LatLng(
+                    station.location.latitude,
+                    station.location.longitude,
+                  ),
+                  width: 130,
+                  height: 70,
+                  child: GestureDetector(
+                    onTap: () => _showStationPopup(station),
+                    child: StationMarker(
+                      availableBike: station.availableBike,
+                    ),
+                  ),
+                ))
+                .toList(),
             ),
           ],
         ),
@@ -225,7 +226,7 @@ class _MapContentState extends State<MapContent> {
           // Current Plan (right aligned under search)
           CurrentPlanCard(
             onTap: () {
-              final userVm = context.read<UserViewModel>();
+              final userVm = context.read<UserGlobalState>();
               if (userVm.currentPass.isActive) {
                 Navigator.push(
                   context,
@@ -260,7 +261,7 @@ class _MapContentState extends State<MapContent> {
                     leading: const Icon(Icons.directions_bike),
                     title: Text(station.name),
                     onTap: () {
-                      viewModel.moveToStation(station);
+                      viewModel.moveToStation(station, mapController);
                     },
                   );
                 },

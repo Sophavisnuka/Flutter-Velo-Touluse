@@ -12,7 +12,6 @@ class MapViewModel extends ChangeNotifier {
   List<Station> stations = [];
   List<Station> filteredStations = [];
   bool isMapLoading = false;
-  MapController mapController = MapController();
   Station? selectedStation;
 
   Future<void> loadStation() async {
@@ -36,7 +35,7 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void moveToStation(Station station) {
+  void moveToStation(Station station, MapController mapController) {
     filteredStations = [];
     notifyListeners();
 
@@ -50,7 +49,7 @@ class MapViewModel extends ChangeNotifier {
   /// [cameraShiftDown] is how many screen pixels to shift the camera
   /// center southward (positive y in world coords), which moves the
   /// station upward on screen.
-  void selectStation(Station station, {double cameraShiftDown = 0}) {
+  void selectStation(Station station,MapController mapController, {double cameraShiftDown = 0}) {
     selectedStation = station;
     filteredStations = [];
     notifyListeners();

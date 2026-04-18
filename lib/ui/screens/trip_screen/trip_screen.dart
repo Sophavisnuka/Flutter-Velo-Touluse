@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/states/trip_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/util/formatter.dart';
 
@@ -32,7 +32,7 @@ class _TripScreenState extends State<TripScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tripVm = context.watch<TripViewModel>();
+    final tripVm = context.watch<TripGlobalState>();
     final elapsed = tripVm.elapsed;
 
     return Scaffold(

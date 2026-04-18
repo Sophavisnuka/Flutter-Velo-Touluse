@@ -3,10 +3,10 @@ import 'package:velo_toulouse/data/repositories/user_repository.dart';
 import 'package:velo_toulouse/model/pass_type.dart';
 import 'package:velo_toulouse/model/user.dart';
 
-class UserViewModel extends ChangeNotifier {
+class UserGlobalState extends ChangeNotifier {
   UserRepository repo;
 
-  UserViewModel(this.repo);
+  UserGlobalState(this.repo);
 
   User? _user;
   bool _isLoading = false;

@@ -9,7 +9,7 @@ import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_
 import 'package:velo_toulouse/ui/screens/select_pass_screen/view/widgets/switch_warning_sheet.dart';
 import 'package:velo_toulouse/ui/services/navigation_service.dart';
 import 'package:velo_toulouse/ui/services/notification_service.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/ui/widgets/list_tile_card.dart';
 import 'package:velo_toulouse/util/formatter.dart';
@@ -120,7 +120,7 @@ class SelectPassCard extends StatelessWidget {
     final bool isSameTierEarlyRenew =
         isCurrent && !isPassExpired && currentExpiresAt != null;
     final DateTime activatedAt =
-        isSameTierEarlyRenew ? currentExpiresAt! : DateTime.now();
+        isSameTierEarlyRenew ? currentExpiresAt : DateTime.now();
 
     onSwitch?.call(activatedAt);
 
@@ -154,7 +154,7 @@ class SelectPassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userVm = context.watch<UserViewModel>();
+    final userVm = context.watch<UserGlobalState>();
     final currentPass = userVm.currentPass;
     final isPassExpired = userVm.isPassExpired;
     final currentExpiresAt = userVm.expiresAt;

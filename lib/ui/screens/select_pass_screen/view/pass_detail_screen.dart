@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velo_toulouse/ui/screens/select_pass_screen/select_pass_screen.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 import 'package:velo_toulouse/util/formatter.dart';
 
@@ -24,7 +24,7 @@ class PassDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<UserViewModel>();
+    final vm = context.watch<UserGlobalState>();
     final pass = vm.currentPass;
     final activatedAt = vm.user?.activatedAt;
     final expiresAt = vm.expiresAt;

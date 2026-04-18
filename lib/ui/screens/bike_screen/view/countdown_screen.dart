@@ -5,7 +5,7 @@ import 'package:velo_toulouse/model/slot.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/trip_screen.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
-import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/states/trip_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class CountdownScreen extends StatefulWidget {
@@ -56,7 +56,7 @@ class _CountdownScreenState extends State<CountdownScreen>
 
   void _navigateToTripScreen() {
     _timer?.cancel();
-    context.read<TripViewModel>().startTrip(
+    context.read<TripGlobalState>().startTrip(
           slot: widget.slot,
           stationName: widget.stationName,
         );

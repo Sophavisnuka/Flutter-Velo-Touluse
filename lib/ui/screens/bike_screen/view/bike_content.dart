@@ -9,12 +9,12 @@ import 'package:velo_toulouse/ui/screens/bike_screen/view/widgets/return_confirm
 import 'package:velo_toulouse/ui/screens/bike_screen/view_models/bike_view_model.dart';
 import 'package:velo_toulouse/ui/screens/map_screen/view_models/map_view_model.dart';
 import 'package:velo_toulouse/ui/screens/trip_screen/trip_summary_screen.dart';
-import 'package:velo_toulouse/ui/screens/trip_screen/view_models/trip_view_model.dart';
+import 'package:velo_toulouse/ui/states/trip_global_state.dart';
 import 'package:velo_toulouse/ui/screens/bike_screen/view/widgets/no_pass_sheet.dart';
 import 'package:velo_toulouse/ui/screens/history_screen/view_models/ride_history_view_model.dart';
 import 'package:velo_toulouse/ui/services/navigation_service.dart';
 import 'package:velo_toulouse/ui/services/notification_service.dart';
-import 'package:velo_toulouse/ui/states/user_view_model.dart';
+import 'package:velo_toulouse/ui/states/user_global_state.dart';
 import 'package:velo_toulouse/ui/theme/theme.dart';
 
 class BikeContent extends StatelessWidget {
@@ -23,7 +23,7 @@ class BikeContent extends StatelessWidget {
   const BikeContent({super.key, required this.stationName});
 
   void _showReleaseConfirmation(BuildContext context, Slot slot) {
-    final userVm = context.read<UserViewModel>();
+    final userVm = context.read<UserGlobalState>();
 
     if (!userVm.currentPass.isActive) {
       showModalBottomSheet(
@@ -84,7 +84,7 @@ class BikeContent extends StatelessWidget {
             await mapVm.refreshStation(bikeVm.selectedStation!.stationId);
           }
           if (context.mounted) {
-            final tripVm = context.read<TripViewModel>();
+            final tripVm = context.read<TripGlobalState>();
             final elapsed = tripVm.elapsed;
             final startStation = tripVm.activeStartStationName ?? '';
             tripVm.endTrip(endStationName: stationName);
@@ -129,7 +129,7 @@ class BikeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<BikeViewModel>();
-    final tripVm = context.watch<TripViewModel>();
+    final tripVm = context.watch<TripGlobalState>();
     final station = vm.selectedStation;
     final isReturnMode = tripVm.isTripActive;
 
